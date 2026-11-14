@@ -1,0 +1,1648 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>COFOCO</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="COFOCO demo storefront and founder dashboard">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: black and gold editorial storefront. Gold only on key figures, rules and active states. Ivory carries headings and the primary button. */
+:root {
+  --bg: #0c0a08;
+  --surface: #151210;
+  --surface-2: #1d1814;
+  --line: rgba(214, 176, 98, 0.18);
+  --line-strong: rgba(214, 176, 98, 0.4);
+  --gold: #c9a24f;
+  --gold-hi: #e6c981;
+  --ivory: #f2ebda;
+  --muted: #a89f8d;
+  --ink: #14100b;
+  --good: #8fc59a;
+  --warn: #e8b04d;
+  --bad: #e6806b;
+  --info: #86b4e6;
+  --font-display: 'Instrument Serif', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --radius: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ivory); font-family: var(--font-body); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--bg); }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+img, svg { max-width: 100%; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; letter-spacing: -0.005em; }
+h1 { font-size: clamp(2.7rem, 9vw, 5.6rem); line-height: 0.98; }
+h2 { font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.05; }
+h3 { font-size: 1.5rem; line-height: 1.15; }
+h4 { font-size: 1.15rem; }
+em { font-style: italic; color: var(--gold-hi); }
+p { margin: 0; }
+:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1180px; margin: 0 auto; }
+.muted { color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.eyebrow { display: inline-flex; align-items: center; gap: 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
+.eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--gold); }
+
+/* Demo bar */
+.demobar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; padding: 8px 0; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--muted); border-bottom: 1px solid var(--line); }
+.demobar b { color: var(--gold); font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; }
+.demobar .ctl { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.demobar select { width: auto; max-width: 100%; font-family: var(--font-mono); font-size: 11px; background: var(--surface); color: var(--ivory); border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; }
+.tag { display: inline-block; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--line-strong); border-radius: 999px; padding: 2px 8px; }
+
+/* Nav */
+.nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 10px); z-index: 50; margin: 14px auto 0; max-width: 1180px; display: flex; align-items: center; gap: 6px; padding: 8px 10px 8px 20px; background: rgba(21, 18, 16, 0.86); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 999px; }
+.logo { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.32em; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; margin-right: auto; }
+.logo .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+.nav a.l { padding: 8px 12px; font-size: 14px; color: var(--muted); border-radius: 999px; }
+.nav a.l:hover, .nav a.l[aria-current="page"] { color: var(--ivory); }
+.nav a.pillnav { padding: 7px 14px; font-size: 13px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--gold-hi); }
+.nav a.pillnav:hover { background: rgba(201, 162, 79, 0.12); }
+.cartbtn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); }
+.cartbtn .n { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--gold); color: var(--ink); font-size: 11px; font-weight: 600; display: grid; place-items: center; }
+@media (max-width: 640px) { .nav a.l.hide-s, .nav a.pillnav { display: none; } .nav { padding-left: 14px; } .logo { letter-spacing: 0.22em; } }
+.demobar .ctl label { display: inline; }
+
+/* Buttons and chips */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--ivory); background: var(--ivory); color: var(--ink); padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background .2s, transform .2s; }
+.btn:hover { background: #fff; }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.btn-o { background: transparent; color: var(--ivory); border-color: var(--line-strong); }
+.btn-o:hover { background: rgba(201, 162, 79, 0.1); border-color: var(--gold); }
+.btn-sm { padding: 6px 12px; font-size: 12.5px; }
+.btn-danger { background: transparent; color: var(--bad); border-color: rgba(230, 128, 107, 0.5); }
+.btn-danger:hover { background: rgba(230, 128, 107, 0.1); }
+.btn-gold { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.btn-gold:hover { background: var(--gold-hi); }
+.arrow::after { content: "\2192"; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 13px; cursor: pointer; }
+.chip:hover { color: var(--ivory); border-color: var(--line-strong); }
+.chip[aria-pressed="true"] { color: var(--ink); background: var(--gold); border-color: var(--gold); }
+.swatch { width: 18px; height: 2px; background: var(--c, var(--gold)); display: inline-block; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 2px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.s-good { color: var(--good); } .s-warn { color: var(--warn); } .s-bad { color: var(--bad); } .s-info { color: var(--info); } .s-mute { color: var(--muted); }
+
+/* Hero */
+.hero { position: relative; padding: clamp(48px, 9vw, 112px) 0 40px; overflow: hidden; isolation: isolate; }
+.hero-bg { position: absolute; inset: -10% -20% auto -20%; height: 120%; z-index: -1; background: radial-gradient(ellipse 50% 45% at 72% 38%, rgba(214, 150, 54, 0.34), transparent 70%), radial-gradient(ellipse 40% 40% at 20% 85%, rgba(150, 100, 40, 0.18), transparent 70%); animation: drift 18s ease-in-out infinite alternate; }
+.hero-arc { position: absolute; right: -6%; top: 6%; width: min(560px, 80vw); z-index: -1; opacity: 0.8; }
+@keyframes drift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(-2%, 3%, 0) scale(1.06); } }
+@keyframes rise { from { opacity: 0.35; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 1.1s ease both; } .rise.d2 { animation-delay: .15s; } .rise.d3 { animation-delay: .3s; }
+.hero h1 { margin: 22px 0 22px; max-width: 12ch; }
+.lede { max-width: 46ch; color: var(--muted); font-size: 1.05rem; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.char-row { list-style: none; padding: 0; margin: 56px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px 18px; }
+.char-row a { display: block; padding-top: 10px; border-top: 2px solid var(--c); font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ivory); }
+.char-row a:hover { color: var(--gold-hi); }
+@media (prefers-reduced-motion: reduce) { .hero-bg, .rise { animation: none !important; } html { scroll-behavior: auto; } * { transition: none !important; } }
+
+/* Sections */
+.section { padding: clamp(40px, 7vw, 84px) 0; border-top: 1px solid var(--line); }
+.section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+.section-head p { max-width: 52ch; color: var(--muted); }
+.grid { display: grid; gap: 16px; }
+.g3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.g4 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; min-width: 0; }
+.pcard { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; min-width: 0; }
+.pcard .art { display: block; aspect-ratio: 4 / 3; background: #100c08; }
+.pcard .art svg { width: 100%; height: 100%; display: block; }
+.pcard .body { display: flex; flex-direction: column; gap: 8px; padding: 16px; flex: 1; }
+.pcard .meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.pcard h3 { font-size: 1.45rem; }
+.pcard .sum { color: var(--muted); font-size: 13.5px; }
+.pcard .foot { margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.price { font-family: var(--font-display); font-size: 1.7rem; color: var(--gold-hi); }
+.cchip { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; }
+.cchip i { width: 16px; height: 2px; background: var(--c); display: inline-block; }
+
+/* Picker */
+.picker { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 860px) { .picker { grid-template-columns: 1.1fr 1fr; align-items: stretch; } }
+.pick-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.pick-list .chip { padding: 10px 16px; font-size: 14px; }
+.pick-list .chip[aria-pressed="true"] { background: transparent; color: var(--ivory); border-color: var(--c); box-shadow: inset 0 -2px 0 var(--c); }
+.pick-panel { border: 1px solid var(--line); border-top: 2px solid var(--c); border-radius: var(--radius); padding: 22px; background: var(--surface); display: grid; gap: 12px; }
+.pick-panel h3 { font-size: 2.2rem; }
+.kv { display: grid; gap: 2px; }
+.kv .k { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+
+.refstrip { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; justify-content: space-between; padding: 18px 22px; border: 1px dashed var(--line-strong); border-radius: var(--radius); background: rgba(201, 162, 79, 0.05); }
+.refstrip form { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Forms */
+label.f { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+label.f > span:first-child { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; }
+input, select, textarea { font: inherit; background: var(--surface-2); color: var(--ivory); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; min-width: 0; }
+input::placeholder { color: #6f675a; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--gold-hi); outline-offset: 1px; border-color: var(--gold); }
+input[aria-invalid="true"] { border-color: var(--bad); }
+.fgrid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.msg { font-size: 13px; padding: 10px 14px; border-radius: 10px; border: 1px solid; }
+.msg.good { color: var(--good); border-color: rgba(143, 197, 154, 0.4); background: rgba(143, 197, 154, 0.07); }
+.msg.bad { color: var(--bad); border-color: rgba(230, 128, 107, 0.45); background: rgba(230, 128, 107, 0.07); }
+.msg.warn { color: var(--warn); border-color: rgba(232, 176, 77, 0.45); background: rgba(232, 176, 77, 0.07); }
+.msg.info { color: var(--info); border-color: rgba(134, 180, 230, 0.4); background: rgba(134, 180, 230, 0.06); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.row.sb { justify-content: space-between; }
+.stack { display: grid; gap: 14px; }
+.stack-s { display: grid; gap: 8px; }
+.empty { text-align: center; padding: 36px 18px; border: 1px dashed var(--line-strong); border-radius: var(--radius); color: var(--muted); display: grid; gap: 12px; justify-items: center; }
+.skeleton { height: 14px; border-radius: 6px; background: linear-gradient(90deg, var(--surface), var(--surface-2), var(--surface)); background-size: 200% 100%; animation: sk 1.4s linear infinite; }
+@keyframes sk { to { background-position: -200% 0; } }
+
+/* Product page */
+.detail { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr); padding: 28px 0 60px; }
+@media (min-width: 900px) { .detail { grid-template-columns: 1.1fr 1fr; } }
+.detail .art { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #100c08; aspect-ratio: 4 / 3; }
+.detail .art svg { width: 100%; height: 100%; display: block; }
+.crumbs { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding-top: 26px; }
+.crumbs a:hover { color: var(--gold-hi); }
+.list-lines { list-style: none; margin: 0; padding: 0; }
+.list-lines li { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line-strong); border-radius: 999px; }
+.qty button { width: 32px; height: 32px; background: none; border: 0; cursor: pointer; font-size: 16px; color: var(--ivory); }
+.qty span { min-width: 26px; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* Tables */
+.tscroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th { text-align: left; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; background: var(--surface); }
+td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: rgba(201, 162, 79, 0.04); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.tt { font-weight: 500; }
+.sub { display: block; font-size: 12px; color: var(--muted); }
+caption { text-align: left; padding: 0; }
+
+/* Timeline */
+.timeline { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 1px solid var(--line-strong); display: grid; gap: 18px; }
+.timeline li { position: relative; }
+.timeline li::before { content: ""; position: absolute; left: -23px; top: 5px; width: 9px; height: 9px; border-radius: 50%; background: var(--bg); border: 1px solid var(--gold); }
+.timeline li.done::before { background: var(--gold); }
+
+/* Dashboard */
+.dash-head { padding: 26px 0 8px; display: flex; flex-wrap: wrap; gap: 14px; align-items: end; justify-content: space-between; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; padding: 14px 0; border-bottom: 1px solid var(--line); margin-bottom: 24px; scrollbar-width: thin; }
+.tabs a { white-space: nowrap; padding: 8px 16px; border-radius: 999px; font-size: 14px; color: var(--muted); border: 1px solid transparent; }
+.tabs a:hover { color: var(--ivory); }
+.tabs a[aria-current="page"] { color: var(--ink); background: var(--gold); }
+.tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: grid; gap: 6px; min-width: 0; align-content: start; }
+.tile .k { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.tile .v { font-family: var(--font-display); font-size: 2rem; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.tile .v.gold { color: var(--gold-hi); }
+.tile .d { font-size: 12px; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; min-width: 0; }
+.panel h3 { margin-bottom: 14px; font-size: 1.35rem; }
+.cols { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .cols.c21 { grid-template-columns: 2fr 1fr; } .cols.c11 { grid-template-columns: 1fr 1fr; } }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 14px; }
+.toolbar label.f { min-width: 140px; }
+.hbar { display: grid; grid-template-columns: minmax(80px, 140px) 1fr auto; gap: 12px; align-items: center; padding: 7px 0; font-size: 13px; }
+.hbar .track { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+.hbar .fill { height: 100%; background: var(--c, var(--gold)); border-radius: 4px; }
+.chart text { fill: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+.chart .grid line { stroke: var(--line); }
+.phone { position: relative; width: min(300px, 100%); aspect-ratio: 9 / 18; border: 1px solid var(--line-strong); border-radius: 28px; background: #0f0c09; overflow: hidden; margin: 0 auto; }
+.phone svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.footer { border-top: 1px solid var(--line); margin-top: 40px; padding: 32px 0 60px; color: var(--muted); font-size: 13px; display: grid; gap: 12px; }
+.footer .big { font-family: var(--font-display); font-size: 1.7rem; color: var(--ivory); }
+
+/* Modal and toast */
+.overlay { position: fixed; inset: 0; z-index: 100; background: rgba(5, 4, 3, 0.78); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
+.modal { width: min(560px, 100%); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 18px; padding: 24px; display: grid; gap: 16px; max-height: calc(100% - 20px); overflow-y: auto; }
+.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); transform: translateX(-50%); z-index: 120; background: var(--ivory); color: var(--ink); padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 500; max-width: calc(100% - 32px); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+.toast.bad { background: var(--bad); }
+.pending-chip { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--warn); border: 1px solid rgba(232, 176, 77, 0.5); border-radius: 999px; padding: 2px 8px; }
+details > summary { cursor: pointer; color: var(--gold-hi); font-size: 13px; }
+
+</style>
+<div id="demo"></div><div id="nav"></div><main id="app"></main><div id="foot"></div><div id="modal"></div><div id="toast" aria-live="polite"></div>
+<script>
+/* COFOCO demo business logic.
+   One engine, one state object. Every screen reads from here.
+   No DOM access, so it can move to a production backend unchanged. */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.Cofoco = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  const MIN = 60000, HOUR = 3600000, DAY = 86400000;
+
+  /* ---------- Static catalog ---------- */
+  const CHARACTERS = [
+    { id: 'arjun', name: 'Arjun', epic: 'Mahabharata', source: 'Mahabharata, the archer', quality: 'Focus', mindset: 'Focus and preparation before training', cue: 'Take three slow breaths and choose one target for the session.', accent: '#7fb2e5', accentName: 'Cool blue', motif: 'moon', kitId: 'arjun', draft: false,
+      story: 'The archer of the Mahabharata is remembered for attention so complete that the world narrowed to a single mark. This kit is for the quiet minutes before training.' },
+    { id: 'bheema', name: 'Bheema', epic: 'Mahabharata', source: 'Mahabharata, the strong Pandava', quality: 'Strength', mindset: 'Strength and the work of a session', cue: 'Set your first lift, then do the unglamorous reps without hurry.', accent: '#b9824f', accentName: 'Warm earth', motif: 'mountain', kitId: 'bheema', draft: false,
+      story: 'Known in the Mahabharata for great strength and a large appetite for work, Bheema stands for the patient effort of a full session.' },
+    { id: 'karna', name: 'Karna', epic: 'Mahabharata', source: 'Mahabharata, the generous warrior', quality: 'Resolve', mindset: 'Show up with resolve', cue: 'Lace up before you decide how you feel about it.', accent: '#e8962e', accentName: 'Amber sun', motif: 'sun', kitId: 'karna', draft: false,
+      story: 'The generous warrior of the Mahabharata kept showing up, whatever the odds. This kit is for days when resolve has to carry the session.' },
+    { id: 'sita', name: 'Sita', epic: 'Ramayana', source: 'Ramayana', quality: 'Steadiness', mindset: 'Steadiness and a wind-down routine', cue: 'Stretch slowly, drink water, and close the session on purpose.', accent: '#ece4d2', accentName: 'Ivory lotus', motif: 'lotus', kitId: 'sita', draft: false,
+      story: 'In the Ramayana, Sita is steady under pressure and grounded in her own values. Her kit shapes a calm wind-down after training.' },
+    { id: 'draupadi', name: 'Draupadi', epic: 'Mahabharata', source: 'Mahabharata', quality: 'Self-possession', mindset: 'Self-possession and a purposeful routine', cue: 'Write the week down, then follow the plan you wrote.', accent: '#d27a92', accentName: 'Rose', motif: 'rose', kitId: 'draupadi', draft: true,
+      story: 'Draupadi of the Mahabharata is known for self-possession and for acting with purpose. Her kit supports a planned, deliberate routine.' },
+    { id: 'savitri', name: 'Savitri', epic: 'Savitri and Satyavan', source: 'Savitri and Satyavan', quality: 'Resolve and consistency', mindset: 'Resolve and consistency', cue: 'Do the small session today so the habit survives the week.', accent: '#98a34e', accentName: 'Olive', motif: 'olive', kitId: 'savitri', draft: true,
+      story: 'Savitri, from the tale of Savitri and Satyavan, is remembered for resolve that did not waver. Her kit is built around consistency.' }
+  ];
+
+  const SUPPLIERS = [
+    { id: 'S1', name: 'Sattva Sourcing', city: 'Mumbai', contact: 'orders@sattvasourcing.example', leadDays: 7 },
+    { id: 'S2', name: 'IronWorks Fitness Supply', city: 'Pune', contact: 'sales@ironworks.example', leadDays: 10 },
+    { id: 'S3', name: 'Bharat Active Textiles', city: 'Tirupur', contact: 'trade@bharatactive.example', leadDays: 12 },
+    { id: 'S4', name: 'NutriLeaf Labs', city: 'Hyderabad', contact: 'batches@nutrileaf.example', leadDays: 14 },
+    { id: 'S5', name: 'Kaveri Packaging', city: 'Bengaluru', contact: 'print@kaveripack.example', leadDays: 6 }
+  ];
+
+  const single = (lot, target) => [{ lot, expiryDays: null, mfgDays: null, target }];
+  // sku, name, type, category, supplier, cost, price, rp (reorder point), rq (reorder qty), batches (target = units left after the seeded week)
+  const ITEMS = [
+    { sku: 'FR-001', name: 'Form Roller', type: 'equipment', category: 'Recovery', supplierId: 'S2', cost: 520, price: 1199, rp: 30, rq: 80, batches: single('L-FR1', 138) },
+    { sku: 'SB-001', name: 'Still Bottle', type: 'accessory', category: 'Hydration', supplierId: 'S1', cost: 240, price: 599, rp: 40, rq: 120, batches: single('L-SB1', 204) },
+    { sku: 'LB-003', name: 'Loop Band Trio', type: 'accessory', category: 'Resistance', supplierId: 'S3', cost: 180, price: 449, rp: 40, rq: 100, batches: single('L-LB1', 118) },
+    { sku: 'RP-002', name: 'Recovery Pair', type: 'accessory', category: 'Recovery', supplierId: 'S1', cost: 330, price: 799, rp: 25, rq: 60, batches: single('L-RP1', 66) },
+    { sku: 'SH-001', name: 'Shaker', type: 'accessory', category: 'Hydration', supplierId: 'S1', cost: 90, price: 249, rp: 50, rq: 150, batches: single('L-SH1', 158) },
+    { sku: 'TB-001', name: 'Tumbler', type: 'accessory', category: 'Hydration', supplierId: 'S1', cost: 280, price: 699, rp: 25, rq: 60, batches: single('L-TB1', 71) },
+    { sku: 'LS-001', name: 'Lifting Straps', type: 'accessory', category: 'Lifting', supplierId: 'S2', cost: 110, price: 299, rp: 35, rq: 100, batches: single('L-LS1', 88) },
+    { sku: 'WW-001', name: 'Wrist Wraps', type: 'accessory', category: 'Lifting', supplierId: 'S2', cost: 130, price: 349, rp: 30, rq: 100, batches: single('L-WW1', 27) },
+    { sku: 'GL-001', name: 'Gloves', type: 'accessory', category: 'Lifting', supplierId: 'S3', cost: 160, price: 399, rp: 30, rq: 80, batches: single('L-GL1', 58) },
+    { sku: 'KS-002', name: 'Knee Sleeves', type: 'accessory', category: 'Lifting', supplierId: 'S2', cost: 380, price: 899, rp: 20, rq: 50, batches: single('L-KS1', 15) },
+    { sku: 'FB-001', name: 'Fabric Bands', type: 'accessory', category: 'Resistance', supplierId: 'S3', cost: 150, price: 379, rp: 35, rq: 90, batches: single('L-FB1', 107) },
+    { sku: 'RT-003', name: 'Resistance Tubes', type: 'equipment', category: 'Resistance', supplierId: 'S3', cost: 170, price: 429, rp: 30, rq: 80, batches: single('L-RT1', 82) },
+    { sku: 'SR-001', name: 'Skipping Rope', type: 'equipment', category: 'Cardio', supplierId: 'S2', cost: 120, price: 299, rp: 40, rq: 120, batches: single('L-SR1', 126) },
+    { sku: 'RB-001', name: 'Running Belt', type: 'accessory', category: 'Cardio', supplierId: 'S3', cost: 200, price: 499, rp: 30, rq: 70, batches: single('L-RB1', 44) },
+    { sku: 'TM-001', name: 'Timer', type: 'equipment', category: 'Cardio', supplierId: 'S1', cost: 260, price: 649, rp: 25, rq: 60, batches: single('L-TM1', 9) },
+    { sku: 'SS-001', name: 'Stretching Strap', type: 'accessory', category: 'Recovery', supplierId: 'S3', cost: 100, price: 279, rp: 30, rq: 90, batches: single('L-SS1', 78) },
+    { sku: 'YM-001', name: 'Yoga Mat', type: 'equipment', category: 'Yoga', supplierId: 'S2', cost: 620, price: 1399, rp: 25, rq: 60, batches: single('L-YM1', 52) },
+    { sku: 'YB-002', name: 'Yoga Blocks', type: 'equipment', category: 'Yoga', supplierId: 'S2', cost: 210, price: 549, rp: 30, rq: 80, batches: single('L-YB1', 23) },
+    { sku: 'GT-001', name: 'Gym Towel', type: 'accessory', category: 'Recovery', supplierId: 'S3', cost: 90, price: 249, rp: 50, rq: 150, batches: single('L-GT1', 196) },
+    { sku: 'WB-002', name: 'Wristbands', type: 'accessory', category: 'Cardio', supplierId: 'S3', cost: 40, price: 149, rp: 60, rq: 200, batches: single('L-WB1', 232) },
+    { sku: 'CP-001', name: 'Carry Pouch', type: 'accessory', category: 'Carry', supplierId: 'S5', cost: 70, price: 229, rp: 40, rq: 120, batches: single('L-CP1', 128) },
+    { sku: 'WJ-001', name: 'Workout Journal', type: 'accessory', category: 'Planning', supplierId: 'S5', cost: 80, price: 299, rp: 40, rq: 120, batches: single('L-WJ1', 34) },
+    { sku: 'FP-001', name: 'Fitness Planner', type: 'accessory', category: 'Planning', supplierId: 'S5', cost: 110, price: 349, rp: 30, rq: 80, batches: single('L-FP1', 97) },
+    { sku: 'SU-WH1', name: 'Whey Protein Isolate', type: 'supplement', category: 'Protein', supplierId: 'S4', cost: 1150, price: 2199, rp: 20, rq: 60,
+      supp: { servingSize: '30 g', servings: 30, flavor: 'Chocolate', storage: 'Cool, dry place. Keep sealed.' },
+      batches: [{ lot: 'WH-2603', mfgDays: -150, expiryDays: 62, target: 14 }, { lot: 'WH-2608', mfgDays: -40, expiryDays: 210, target: 48 }] },
+    { sku: 'SU-CR1', name: 'Creatine Monohydrate', type: 'supplement', category: 'Performance', supplierId: 'S4', cost: 640, price: 1299, rp: 25, rq: 70,
+      supp: { servingSize: '5 g', servings: 60, flavor: 'Unflavoured', storage: 'Cool, dry place. Keep sealed.' },
+      batches: [{ lot: 'CR-2701', mfgDays: -30, expiryDays: 320, target: 61 }] },
+    { sku: 'SU-EL1', name: 'Electrolyte Mix', type: 'supplement', category: 'Hydration', supplierId: 'S4', cost: 310, price: 599, rp: 30, rq: 90,
+      supp: { servingSize: '8 g', servings: 20, flavor: 'Lemon', storage: 'Below 30 C. Close the pouch after use.' },
+      batches: [{ lot: 'EL-2509', mfgDays: -400, expiryDays: -12, target: 22 }, { lot: 'EL-2611', mfgDays: -35, expiryDays: 150, target: 55 }] },
+    { sku: 'SU-MG1', name: 'Magnesium Glycinate', type: 'supplement', category: 'Recovery', supplierId: 'S4', cost: 430, price: 899, rp: 20, rq: 50,
+      supp: { servingSize: '2 capsules', servings: 45, flavor: 'Capsule', storage: 'Cool, dry place.' },
+      batches: [{ lot: 'MG-2702', mfgDays: -20, expiryDays: 400, target: 38 }] },
+    { sku: 'SU-O31', name: 'Omega-3 Fish Oil', type: 'supplement', category: 'Wellness', supplierId: 'S4', cost: 480, price: 999, rp: 20, rq: 50,
+      supp: { servingSize: '2 softgels', servings: 30, flavor: 'Softgel', storage: 'Cool, dry place. Avoid heat.' },
+      batches: [{ lot: 'O3-2604', mfgDays: -200, expiryDays: 75, target: 26 }, { lot: 'O3-2705', mfgDays: -15, expiryDays: 380, target: 10 }] }
+  ];
+
+  const KITS = [
+    { id: 'arjun', characterId: 'arjun', name: 'Arjun Focus Kit', price: 2399, bom: [['SB-001', 1], ['TM-001', 1], ['WW-001', 1], ['WJ-001', 1], ['SU-EL1', 1]], blurb: 'A pre-training set for attention: hydration, a timer, wrist support and a journal for the one target you pick.' },
+    { id: 'bheema', characterId: 'bheema', name: 'Bheema Strength Kit', price: 3499, bom: [['LS-001', 1], ['KS-002', 1], ['GT-001', 1], ['SH-001', 1], ['SU-WH1', 1]], blurb: 'Straps, sleeves, a towel, a shaker and protein for sessions that are mostly work.' },
+    { id: 'karna', characterId: 'karna', name: 'Karna Resolve Kit', price: 2599, bom: [['SR-001', 1], ['WB-002', 2], ['RB-001', 1], ['TB-001', 1], ['SU-CR1', 1]], blurb: 'Rope, wristbands, a running belt and creatine for the days that begin with resolve.' },
+    { id: 'sita', characterId: 'sita', name: 'Sita Wind-down Kit', price: 3399, bom: [['YM-001', 1], ['YB-002', 2], ['SS-001', 1], ['RP-002', 1], ['SU-MG1', 1]], blurb: 'A mat, blocks, a strap and recovery socks to close a session slowly.' },
+    { id: 'draupadi', characterId: 'draupadi', name: 'Draupadi Purpose Kit', price: 1299, bom: [['FP-001', 1], ['LB-003', 1], ['FB-001', 1], ['CP-001', 1]], blurb: 'A planner, bands and a pouch for a routine you decide in advance.' },
+    { id: 'savitri', characterId: 'savitri', name: 'Savitri Consistency Kit', price: 2899, bom: [['RT-003', 1], ['FR-001', 1], ['GL-001', 1], ['WJ-001', 1], ['SU-O31', 1]], blurb: 'Tubes, a roller, gloves and a journal that make the small session easy to repeat.' }
+  ].map(k => ({ ...k, bom: k.bom.map(([sku, qty]) => ({ sku, qty })) }));
+
+  const AREAS = [
+    { id: 'hero', label: 'Hero calls to action', sessions: 3950, orders: 110 },
+    { id: 'picker', label: 'Mindset picker', sessions: 2780, orders: 96 },
+    { id: 'shop', label: 'Shop product cards', sessions: 2120, orders: 78 },
+    { id: 'detail', label: 'Kit detail', sessions: 980, orders: 38 },
+    { id: 'compare', label: 'Comparison', sessions: 310, orders: 12 },
+    { id: 'referral', label: 'Referral entry', sessions: 234, orders: 15 }
+  ];
+  const INTERACTION_AREAS = [
+    { id: 'nav', label: 'Navigation', seed: 2740 }, { id: 'hero', label: 'Hero calls to action', seed: 1842 },
+    { id: 'picker', label: 'Mindset picker', seed: 2310 }, { id: 'shop', label: 'Shop product cards', seed: 3106 },
+    { id: 'detail', label: 'Kit detail', seed: 1478 }, { id: 'compare', label: 'Comparison', seed: 412 },
+    { id: 'cart', label: 'Bag', seed: 1031 }, { id: 'checkout', label: 'Checkout', seed: 622 },
+    { id: 'referral', label: 'Referral entry', seed: 355 }
+  ];
+
+  const ORDER_FLOW = { pending: ['packed', 'cancelled'], packed: ['shipped', 'cancelled'], shipped: ['delivered'], delivered: [], cancelled: [] };
+  const ACTION_LABEL = { packed: 'Mark packed', shipped: 'Mark shipped', delivered: 'Mark delivered', cancelled: 'Cancel order' };
+  const ADJUST_REASONS = ['Cycle count correction', 'Damaged in transit', 'Found stock', 'Returned to supplier', 'Sample or gift', 'Other'];
+
+  /* ---------- Helpers ---------- */
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const err = (code, message, extra) => Object.assign({ ok: false, error: code, message }, extra || {});
+  const ok = (extra) => Object.assign({ ok: true }, extra || {});
+  const normEmail = s => String(s || '').trim().toLowerCase();
+  const normPhone = s => String(s || '').replace(/\D/g, '').slice(-10);
+  const normCode = s => String(s || '').trim().toUpperCase();
+  const emailOk = s => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
+  const dayKey = ts => { const d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  const startOfDay = ts => { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); };
+  const sum = (arr, f) => arr.reduce((a, x) => a + (f ? f(x) : x), 0);
+  const r2 = n => Math.round(n * 100) / 100;
+
+  function blankState(nowMs) {
+    return {
+      version: 1, createdAt: nowMs, seq: {},
+      settings: { commissionTrigger: 'signup', defaultCommission: { fixed: 50, percent: 0 }, expiryWindowDays: 90, reservationMinutes: 10 },
+      items: ITEMS.map(i => ({ sku: i.sku, name: i.name, type: i.type, category: i.category, supplierId: i.supplierId, cost: i.cost, price: i.price, unit: 'pcs', rp: i.rp, rq: i.rq, status: 'active', supp: i.supp || null })),
+      suppliers: SUPPLIERS.map(s => ({ ...s, lastOrderAt: null })),
+      batches: [], ledger: [], reservations: [], orders: [], users: [], influencers: [], codes: [], visits: [],
+      commissions: [], payouts: [], purchaseOrders: [], idem: {},
+      interactions: {}, touchPoints: [], visitors: 10374, areaSessions: {}
+    };
+  }
+
+  /* ---------- Engine ---------- */
+  function createEngine(opts) {
+    opts = opts || {};
+    let S = opts.state || null;
+    const clockFn = opts.clock || (() => Date.now());
+    let override = null;
+    const now = () => (override != null ? override : clockFn());
+    const E = {};
+    let ohCache = { ledger: null, len: -1, map: null };
+    let itemIdx = null, itemIdxFor = null;
+
+    if (!S) S = seedState(now());
+
+    function nid(prefix) { S.seq[prefix] = (S.seq[prefix] || 0) + 1; return S.seq[prefix]; }
+    function item(sku) { if (itemIdxFor !== S.items) { itemIdx = {}; S.items.forEach(i => itemIdx[i.sku] = i); itemIdxFor = S.items; } return itemIdx[sku]; }
+    function batchesOf(sku) { return S.batches.filter(b => b.sku === sku); }
+
+    E.state = () => S;
+    E.load = st => { S = st; ohCache = { ledger: null, len: -1, map: null }; itemIdxFor = null; };
+    E.now = now;
+    E.withTime = (t, fn) => { const prev = override; override = t; try { return fn(); } finally { override = prev; } };
+    E.reset = () => { S = seedState(clockFn()); ohCache = { ledger: null, len: -1, map: null }; itemIdxFor = null; return S; };
+    E.catalog = { characters: CHARACTERS, suppliers: SUPPLIERS, kits: KITS, areas: AREAS, interactionAreas: INTERACTION_AREAS, adjustReasons: ADJUST_REASONS, orderFlow: ORDER_FLOW, actionLabel: ACTION_LABEL };
+    E.character = id => CHARACTERS.find(c => c.id === id);
+
+    /* ----- Stock ledger ----- */
+    function addEntry(e) {
+      const entry = Object.assign({ id: 'L' + nid('L'), at: now(), by: 'System' }, e);
+      S.ledger.push(entry); return entry;
+    }
+    function onHandMap() {
+      if (ohCache.ledger !== S.ledger || ohCache.len !== S.ledger.length) {
+        const m = {}; for (const e of S.ledger) m[e.batchId] = (m[e.batchId] || 0) + e.qty;
+        ohCache = { ledger: S.ledger, len: S.ledger.length, map: m };
+      }
+      return ohCache.map;
+    }
+    function sweepReservations() {
+      const t = now(); let n = 0;
+      for (const r of S.reservations) if (r.status === 'active' && r.expiresAt <= t) { r.status = 'expired'; n++; }
+      return n;
+    }
+    function reservedMap() {
+      const t = now(), m = {};
+      for (const r of S.reservations) if (r.status === 'active' && r.expiresAt > t) for (const a of r.allocations) m[a.batchId] = (m[a.batchId] || 0) + a.qty;
+      return m;
+    }
+    E.sweepReservations = sweepReservations;
+
+    function itemStock(sku) {
+      const oh = onHandMap(), rs = reservedMap(), t = now(), win = S.settings.expiryWindowDays * DAY;
+      let onHand = 0, reserved = 0, available = 0, expiredQty = 0, expiringQty = 0; const batches = [];
+      for (const b of batchesOf(sku)) {
+        const o = oh[b.id] || 0, r = rs[b.id] || 0;
+        const expired = b.expiry != null && b.expiry <= t;
+        const warning = !expired && b.expiry != null && b.expiry - t <= win;
+        const av = expired ? 0 : Math.max(0, o - r);
+        onHand += o; reserved += r; available += av;
+        if (expired) expiredQty += o; if (warning) expiringQty += o;
+        batches.push(Object.assign({}, b, { onHand: o, reserved: r, available: av, expired, warning, daysToExpiry: b.expiry == null ? null : Math.ceil((b.expiry - t) / DAY) }));
+      }
+      return { sku, onHand, reserved, available, expiredQty, expiringQty, batches };
+    }
+    E.itemStock = itemStock;
+    E.item = item;
+    E.items = () => S.items;
+    E.onHandFromLedger = sku => sum(batchesOf(sku), b => sum(S.ledger.filter(e => e.batchId === b.id), e => e.qty));
+    E.batchOnHand = id => onHandMap()[id] || 0;
+
+    function allocateSku(sku, qty, oh, rs, t) {
+      const bs = batchesOf(sku).filter(b => !(b.expiry != null && b.expiry <= t)).sort((a, b) => (a.expiry == null ? Infinity : a.expiry) - (b.expiry == null ? Infinity : b.expiry));
+      let left = qty; const out = [];
+      for (const b of bs) {
+        const av = (oh[b.id] || 0) - (rs[b.id] || 0); if (av <= 0) continue;
+        const take = Math.min(av, left); out.push({ sku, batchId: b.id, qty: take }); left -= take; if (left === 0) break;
+      }
+      return left === 0 ? out : null;
+    }
+
+    /* ----- Products and kit availability ----- */
+    E.products = function () {
+      const kits = KITS.map(k => ({ id: 'kit-' + k.id, kind: 'kit', name: k.name, characterId: k.characterId, price: k.price, bom: k.bom, blurb: k.blurb }));
+      const items = S.items.map(i => ({ id: 'item-' + i.sku, kind: 'item', sku: i.sku, name: i.name, itemType: i.type, characterId: null, price: i.price, bom: [{ sku: i.sku, qty: 1 }], blurb: i.category }));
+      return kits.concat(items);
+    };
+    E.product = id => E.products().find(p => p.id === id) || null;
+    E.productAvailability = function (productId) {
+      const p = E.product(productId); if (!p) return null;
+      let min = Infinity, limiting = null; const components = [];
+      for (const c of p.bom) {
+        const st = itemStock(c.sku), it = item(c.sku), can = Math.floor(st.available / c.qty);
+        components.push({ sku: c.sku, name: it.name, qty: c.qty, available: st.available, supports: can, supplier: it.supplierId });
+        if (can < min) { min = can; limiting = { sku: c.sku, name: it.name }; }
+      }
+      const sellable = min === Infinity ? 0 : min;
+      return { productId, sellable, limiting, components, state: sellable === 0 ? 'out' : sellable <= 10 ? 'low' : 'in' };
+    };
+    E.kitAvailability = () => KITS.map(k => Object.assign({ kit: k }, E.productAvailability('kit-' + k.id)));
+    E.contentsSummary = function (productId) {
+      const p = E.product(productId); const names = p.bom.map(c => (c.qty > 1 ? c.qty + ' x ' : '') + item(c.sku).name);
+      return names.length > 3 ? names.slice(0, 3).join(', ') + ' +' + (names.length - 3) + ' more' : names.join(', ');
+    };
+
+    /* ----- Reservation ----- */
+    function needBySku(lines) {
+      const need = {}; const bad = [];
+      for (const l of lines) {
+        const p = E.product(l.productId); const q = Math.floor(Number(l.qty));
+        if (!p || !(q > 0)) { bad.push(l); continue; }
+        for (const c of p.bom) need[c.sku] = (need[c.sku] || 0) + c.qty * q;
+      }
+      return { need, bad };
+    }
+    E.cartCheck = function (lines) {
+      sweepReservations();
+      const { need, bad } = needBySku(lines); const oh = onHandMap(), rs = reservedMap(), t = now(); const shortages = [];
+      for (const sku in need) if (!allocateSku(sku, need[sku], oh, rs, t)) { const st = itemStock(sku); shortages.push({ sku, name: item(sku).name, need: need[sku], have: st.available, supplierId: item(sku).supplierId }); }
+      return { ok: shortages.length === 0 && bad.length === 0, shortages, invalid: bad };
+    };
+    E.reserve = function (lines, opts2) {
+      sweepReservations();
+      if (!lines || !lines.length) return err('empty_cart', 'Your bag is empty.');
+      const { need, bad } = needBySku(lines); if (bad.length) return err('invalid_line', 'Some items in your bag are no longer available.');
+      const oh = onHandMap(), rs = reservedMap(), t = now(); const allocations = [], shortages = [];
+      for (const sku in need) { const a = allocateSku(sku, need[sku], oh, rs, t); if (!a) { const st = itemStock(sku); shortages.push({ sku, name: item(sku).name, need: need[sku], have: st.available }); } else allocations.push(...a); }
+      if (shortages.length) return err('short', 'Not enough stock to reserve everything in your bag. Nothing was reserved.', { shortages });
+      const mins = (opts2 && opts2.minutes) || S.settings.reservationMinutes;
+      const r = { id: 'R' + nid('R'), lines: lines.map(l => ({ productId: l.productId, qty: Math.floor(Number(l.qty)) })), allocations, createdAt: t, expiresAt: t + mins * MIN, status: 'active' };
+      S.reservations.push(r); return ok({ reservation: r });
+    };
+    E.reservation = id => S.reservations.find(r => r.id === id) || null;
+    E.releaseReservation = function (id) {
+      const r = E.reservation(id); if (!r) return err('not_found', 'Reservation not found.');
+      if (r.status === 'active') r.status = 'released'; return ok({ reservation: r });
+    };
+
+    /* ----- Orders ----- */
+    function userById(id) { return S.users.find(u => u.id === id) || null; }
+    E.userById = userById;
+    E.userByEmail = e => S.users.find(u => u.email && u.email === normEmail(e)) || null;
+    E.order = id => S.orders.find(o => o.id === String(id).toUpperCase()) || null;
+    E.orders = () => S.orders;
+
+    E.placeOrder = function (p) {
+      sweepReservations();
+      const r = E.reservation(p.reservationId);
+      if (!r || r.status !== 'active') return err('reservation_expired', 'Your reserved items were released. Review your bag and try again.');
+      const c = p.customer || {}; const name = String(c.name || '').trim(), email = normEmail(c.email), phone = normPhone(c.phone);
+      if (!name) return err('name_required', 'Enter your name.', { field: 'name' });
+      if (!emailOk(email) && phone.length < 10) return err('contact_required', 'Enter a valid email or a 10-digit phone number.', { field: 'email' });
+      if (p.paymentResult === 'fail') return err('payment_declined', 'Payment declined (simulated). Your items stay reserved until the timer ends.');
+      const t = now(); const n = nid('O');
+      let user = p.userId ? userById(p.userId) : null; if (!user && email) user = E.userByEmail(email);
+      const lines = r.lines.map(l => { const pr = E.product(l.productId); return { productId: pr.id, name: pr.name, qty: l.qty, price: pr.price, characterId: pr.characterId, kind: pr.kind }; });
+      const total = sum(lines, l => l.price * l.qty);
+      const order = {
+        id: 'CF-' + (10000 + n), createdAt: t, customer: { name, email: email || null, phone: phone || null }, userId: user ? user.id : null,
+        referral: user && user.referral ? { code: user.referral.code, influencerId: user.referral.influencerId } : null,
+        lines, subtotal: total, total, payment: { method: 'prepaid', status: 'paid', ref: 'DEMO-' + (700000 + n * 37) },
+        status: 'pending', history: [{ status: 'pending', at: t, by: p.by || 'Shopper' }], tracking: null, sourceArea: p.sourceArea || 'shop', allocations: r.allocations.map(a => Object.assign({}, a)), reservationId: r.id
+      };
+      for (const a of r.allocations) addEntry({ sku: a.sku, batchId: a.batchId, qty: -a.qty, type: 'sale', reason: 'Order', ref: order.id, by: 'Shopper' });
+      r.status = 'converted'; S.orders.push(order);
+      onOrderPlaced(order);
+      return ok({ order });
+    };
+
+    E.canTransition = (o, to) => ORDER_FLOW[o.status].includes(to);
+    E.nextActions = o => ORDER_FLOW[o.status].map(to => ({ to, label: ACTION_LABEL[to], danger: to === 'cancelled' }));
+    E.transition = function (orderId, to, by) {
+      const o = E.order(orderId); if (!o) return err('not_found', 'Order not found.');
+      if (!E.canTransition(o, to)) return err('invalid_transition', 'An order that is ' + o.status + ' cannot move to ' + to + '.');
+      const t = now();
+      if (to === 'shipped') o.tracking = { carrier: 'Demo Courier', number: 'DCX' + (710000000 + (parseInt(o.id.slice(3), 10) * 7919) % 90000000) };
+      if (to === 'cancelled') {
+        for (const a of o.allocations) addEntry({ sku: a.sku, batchId: a.batchId, qty: a.qty, type: 'cancel', reason: 'Order cancelled', ref: o.id, by: by || 'Staff' });
+        for (const e of S.commissions) if (e.orderId === o.id) {
+          if (e.status === 'pending' || e.status === 'approved') { reverseCore(e, 'Order ' + o.id + ' cancelled', t); }
+          else if (e.status === 'paid') e.flag = 'Order cancelled after payout';
+        }
+        o.payment.status = 'refunded';
+      }
+      o.status = to; o.history.push({ status: to, at: t, by: by || 'Staff' });
+      return ok({ order: o });
+    };
+
+    /* ----- Influencers, codes, registration ----- */
+    function codeRec(code) { code = normCode(code); return S.codes.find(c => c.code === code) || null; }
+    E.codeRec = codeRec;
+    E.influencer = id => S.influencers.find(i => i.id === id) || null;
+    E.codesOf = id => S.codes.filter(c => c.influencerId === id);
+    E.validateCode = function (raw) {
+      const code = normCode(raw);
+      if (!code) return err('empty', 'Enter a code.');
+      const c = codeRec(code); if (!c) return err('not_found', 'We could not find the code ' + code + '. Check the spelling or continue without one.', { canContinue: true });
+      const inf = E.influencer(c.influencerId);
+      if (c.status === 'paused') return err('paused', 'The code ' + code + ' is paused right now. You can continue without it.', { canContinue: true });
+      if (c.expiresAt != null && c.expiresAt <= now()) return err('expired', 'The code ' + code + ' has expired. You can continue without it.', { canContinue: true });
+      if (!inf || inf.status !== 'active') return err('inactive', 'The code ' + code + ' is no longer active. You can continue without it.', { canContinue: true });
+      return ok({ code: c, influencer: inf });
+    };
+    E.recordLinkVisit = function (raw) {
+      const c = codeRec(raw); if (!c) return err('not_found', 'Unknown code.');
+      S.visits.push({ id: 'V' + nid('V'), codeId: c.id, influencerId: c.influencerId, at: now() });
+      return E.validateCode(raw);
+    };
+    E.linkFor = code => 'cofoco.demo/join/' + normCode(code);
+
+    function commissionRule(infId) {
+      const inf = E.influencer(infId); const d = S.settings.defaultCommission;
+      const o = inf && inf.commission; return { fixed: o && o.fixed != null ? o.fixed : d.fixed, percent: o && o.percent != null ? o.percent : d.percent };
+    }
+    E.commissionRule = commissionRule;
+    function addCommission(kind, key, infId, userId, orderId, amount) {
+      if (!(amount > 0)) return null;
+      if (S.commissions.some(e => e.key === key)) return null; // idempotent
+      const e = { id: 'C' + nid('C'), key, kind, influencerId: infId, userId, orderId: orderId || null, amount: r2(amount), status: 'pending', createdAt: now(), approvedAt: null, paidAt: null, payoutId: null, reversedAt: null, reason: null };
+      S.commissions.push(e); return e;
+    }
+    function onOrderPlaced(order) {
+      if (!order.referral || !order.userId) return;
+      const inf = E.influencer(order.referral.influencerId); if (!inf || inf.status !== 'active') return;
+      const rule = commissionRule(inf.id);
+      if (S.settings.commissionTrigger === 'first_order') addCommission('first_order', 'first:' + order.userId, inf.id, order.userId, order.id, rule.fixed);
+      if (rule.percent > 0) addCommission('order_pct', 'pct:' + order.id, inf.id, order.userId, order.id, order.total * rule.percent / 100);
+    }
+
+    E.register = function (p) {
+      const name = String(p.name || '').trim(), email = normEmail(p.email), phone = normPhone(p.phone);
+      if (!name) return err('name_required', 'Enter your name.', { field: 'name' });
+      if (!email && !phone) return err('contact_required', 'Enter an email or a phone number.', { field: 'email' });
+      if (email && !emailOk(email)) return err('email_invalid', 'That email address does not look right.', { field: 'email' });
+      if (phone && phone.length < 10) return err('phone_invalid', 'Enter a 10-digit phone number.', { field: 'phone' });
+      const dup = S.users.find(u => (email && u.email === email) || (phone && u.phone === phone));
+      if (dup) return err('duplicate', 'This email or phone is already registered. No second referral or commission was created.', { existingUserId: dup.id });
+      const code = normCode(p.code); let referral = null, referralNote = null;
+      if (code) {
+        const v = E.validateCode(code);
+        if (!v.ok) { if (!p.continueWithoutCode) return err('invalid_code', v.message, { canContinue: true, field: 'code' }); referralNote = { applied: false, reason: v.error, message: v.message }; }
+        else {
+          const inf = v.influencer;
+          const self = (email && normEmail(inf.email) === email) || (phone && normPhone(inf.phone) === phone) || (p.deviceMarker && (inf.deviceMarkers || []).includes(p.deviceMarker));
+          if (self) referralNote = { applied: false, reason: 'self', message: 'You cannot use your own code. You are registered without a referrer.' };
+          else referral = { code: v.code.code, influencerId: inf.id, at: now() };
+        }
+      }
+      const user = { id: 'U' + nid('U'), name, email: email || null, phone: phone || null, createdAt: now(), referral, deviceMarker: p.deviceMarker || null };
+      S.users.push(user);
+      let entry = null;
+      if (referral && S.settings.commissionTrigger === 'signup') {
+        const rule = commissionRule(referral.influencerId);
+        entry = addCommission('signup', 'signup:' + user.id, referral.influencerId, user.id, null, rule.fixed);
+      }
+      if (referral) referralNote = { applied: true, code: referral.code, message: 'Code ' + referral.code + ' applied. ' + E.influencer(referral.influencerId).name + ' is credited for introducing you.' };
+      return ok({ user, referral: referralNote, commission: entry });
+    };
+
+    E.createInfluencer = function (p) {
+      const name = String(p.name || '').trim(); if (!name) return err('name_required', 'Enter a name.', { field: 'name' });
+      if (!['instructor', 'social', 'other'].includes(p.type)) return err('type_invalid', 'Choose a type.', { field: 'type' });
+      const email = normEmail(p.email), phone = normPhone(p.phone);
+      if (email && !emailOk(email)) return err('email_invalid', 'That email does not look right.', { field: 'email' });
+      const inf = { id: 'I' + nid('I'), name, type: p.type, handle: String(p.handle || '').trim(), email: email || null, phone: phone || null, status: 'active', commission: p.commission || null, deviceMarkers: [], createdAt: now() };
+      let code = null;
+      if (p.code) { const cr = E.createCodeCheck(p.code); if (!cr.ok) return cr; }
+      S.influencers.push(inf);
+      if (p.code) code = E.createCode(inf.id, p.code, { expiresAt: p.expiresAt || null }).code;
+      return ok({ influencer: inf, code });
+    };
+    E.createCodeCheck = function (raw) {
+      const code = normCode(raw);
+      if (!/^[A-Z0-9][A-Z0-9-]{3,23}$/.test(code)) return err('code_format', 'Use 4 to 24 letters, numbers or hyphens, for example ARJUN-RITU10.', { field: 'code' });
+      if (codeRec(code)) return err('code_duplicate', 'The code ' + code + ' is already taken. Codes are not case sensitive.', { field: 'code' });
+      return ok({ code });
+    };
+    E.createCode = function (infId, raw, o) {
+      if (!E.influencer(infId)) return err('not_found', 'Influencer not found.');
+      const chk = E.createCodeCheck(raw); if (!chk.ok) return chk;
+      const c = { id: 'K' + nid('K'), code: chk.code, influencerId: infId, status: 'active', expiresAt: (o && o.expiresAt) || null, createdAt: now() };
+      S.codes.push(c); return ok({ code: c });
+    };
+    E.setCodeStatus = function (codeId, status) {
+      const c = S.codes.find(x => x.id === codeId); if (!c) return err('not_found', 'Code not found.');
+      if (!['active', 'paused'].includes(status)) return err('invalid', 'Invalid status.'); c.status = status; return ok({ code: c });
+    };
+    E.setInfluencerStatus = function (id, status) {
+      const i = E.influencer(id); if (!i) return err('not_found', 'Influencer not found.');
+      if (!['active', 'paused', 'ended'].includes(status)) return err('invalid', 'Invalid status.'); i.status = status; return ok({ influencer: i });
+    };
+    E.markInfluencerDevice = function (id, marker) { const i = E.influencer(id); if (i && marker && !i.deviceMarkers.includes(marker)) i.deviceMarkers.push(marker); };
+    E.setSetting = function (key, value) {
+      if (key === 'commissionTrigger' && !['signup', 'first_order'].includes(value)) return err('invalid', 'Invalid trigger.');
+      if (key === 'defaultCommission') { const f = Number(value.fixed), pc = Number(value.percent); if (!(f >= 0) || !(pc >= 0 && pc <= 100)) return err('invalid', 'Enter a valid amount and percentage.'); value = { fixed: f, percent: pc }; }
+      if (key === 'expiryWindowDays') { value = Math.floor(Number(value)); if (!(value >= 1)) return err('invalid', 'Enter a number of days.'); }
+      S.settings[key] = value; return ok({ settings: S.settings });
+    };
+
+    /* ----- Commission ledger and payouts ----- */
+    E.commissionEntry = id => S.commissions.find(e => e.id === id) || null;
+    E.approveEntry = function (id) {
+      const e = E.commissionEntry(id); if (!e) return err('not_found', 'Entry not found.');
+      if (e.status !== 'pending') return err('invalid_status', 'Only pending entries can be approved.');
+      e.status = 'approved'; e.approvedAt = now(); return ok({ entry: e });
+    };
+    E.approveAllPending = function (infId) {
+      let n = 0; for (const e of S.commissions) if (e.influencerId === infId && e.status === 'pending') { e.status = 'approved'; e.approvedAt = now(); n++; } return ok({ count: n });
+    };
+    function reverseCore(e, reason, t) {
+      if (e.payoutId) { const p = S.payouts.find(x => x.id === e.payoutId); if (p && p.status === 'draft') { p.entryIds = p.entryIds.filter(x => x !== e.id); p.amount = r2(sum(p.entryIds, id => E.commissionEntry(id).amount)); } e.payoutId = null; }
+      e.status = 'reversed'; e.reversedAt = t; e.reason = reason;
+    }
+    E.reverseEntry = function (id, reason) {
+      const e = E.commissionEntry(id); if (!e) return err('not_found', 'Entry not found.');
+      if (!String(reason || '').trim()) return err('reason_required', 'Enter a reason for the reversal.', { field: 'reason' });
+      if (e.status === 'paid') return err('already_paid', 'Paid entries cannot be reversed in the demo.');
+      if (e.status === 'reversed') return err('already_reversed', 'This entry is already reversed.');
+      reverseCore(e, String(reason).trim(), now()); return ok({ entry: e });
+    };
+    E.payoutQueue = function () {
+      return S.influencers.map(inf => { const es = S.commissions.filter(e => e.influencerId === inf.id && e.status === 'approved'); return { influencer: inf, entries: es, amount: r2(sum(es, e => e.amount)) }; }).filter(r => r.entries.length);
+    };
+    E.createPayout = function (infId) {
+      const es = S.commissions.filter(e => e.influencerId === infId && e.status === 'approved' && !e.payoutId);
+      if (!es.length) return err('nothing_to_pay', 'There are no approved entries to pay for this person.');
+      const p = { id: 'PAY-' + (1000 + nid('P')), influencerId: infId, entryIds: es.map(e => e.id), amount: r2(sum(es, e => e.amount)), status: 'draft', createdAt: now(), reference: null, paidAt: null };
+      es.forEach(e => e.payoutId = p.id); S.payouts.push(p); return ok({ payout: p });
+    };
+    E.markPayoutPaid = function (payoutId, reference, dateMs) {
+      const p = S.payouts.find(x => x.id === payoutId); if (!p) return err('not_found', 'Payout not found.');
+      if (p.status === 'paid') return err('already_paid', 'This payout is already marked paid. Nothing was changed.', { payout: p });
+      if (!String(reference || '').trim()) return err('reference_required', 'Enter the bank or UPI reference.', { field: 'reference' });
+      const at = dateMs || now();
+      for (const id of p.entryIds) { const e = E.commissionEntry(id); e.status = 'paid'; e.paidAt = at; }
+      p.status = 'paid'; p.reference = String(reference).trim(); p.paidAt = at; return ok({ payout: p });
+    };
+    E.recordPayout = function (infId, reference, dateMs, idemKey) {
+      if (idemKey && S.idem[idemKey]) return ok({ payout: S.payouts.find(p => p.id === S.idem[idemKey]), duplicate: true });
+      if (!String(reference || '').trim()) return err('reference_required', 'Enter the bank or UPI reference.', { field: 'reference' });
+      const c = E.createPayout(infId); if (!c.ok) return c;
+      const m = E.markPayoutPaid(c.payout.id, reference, dateMs); if (!m.ok) return m;
+      if (idemKey) S.idem[idemKey] = c.payout.id; return ok({ payout: m.payout, duplicate: false });
+    };
+
+    /* ----- Inventory operations ----- */
+    E.adjust = function (p) {
+      const it = item(p.sku); if (!it) return err('not_found', 'Item not found.');
+      const delta = Math.trunc(Number(p.delta)); if (!delta) return err('delta_invalid', 'Enter a change other than zero.', { field: 'delta' });
+      if (!String(p.reason || '').trim()) return err('reason_required', 'Choose a reason for this adjustment.', { field: 'reason' });
+      const b = S.batches.find(x => x.id === p.batchId && x.sku === p.sku); if (!b) return err('batch_required', 'Choose a batch.', { field: 'batchId' });
+      const oh = onHandMap()[b.id] || 0; if (oh + delta < 0) return err('negative', 'This batch only has ' + oh + ' on hand.', { field: 'delta' });
+      const e = addEntry({ sku: p.sku, batchId: b.id, qty: delta, type: 'adjustment', reason: String(p.reason).trim() + (p.note ? ': ' + p.note : ''), ref: null, by: p.by || 'Staff' });
+      return ok({ entry: e });
+    };
+    E.writeOff = function (batchId, reason, by) {
+      const b = S.batches.find(x => x.id === batchId); if (!b) return err('not_found', 'Batch not found.');
+      const oh = onHandMap()[b.id] || 0; if (oh <= 0) return err('empty', 'This batch has nothing to write off.');
+      return ok({ entry: addEntry({ sku: b.sku, batchId: b.id, qty: -oh, type: 'writeoff', reason: reason || 'Expired stock written off', by: by || 'Staff' }) });
+    };
+    E.createPO = function (supplierId, lines) {
+      const sup = S.suppliers.find(s => s.id === supplierId); if (!sup) return err('not_found', 'Supplier not found.');
+      const ls = (lines || []).map(l => ({ sku: l.sku, qty: Math.floor(Number(l.qty)) })).filter(l => item(l.sku) && l.qty > 0 && item(l.sku).supplierId === supplierId);
+      if (!ls.length) return err('empty', 'Add at least one item from this supplier.');
+      const po = { id: 'PUR-' + (100 + nid('PO')), supplierId, lines: ls, status: 'ordered', createdAt: now(), receivedAt: null };
+      S.purchaseOrders.push(po); sup.lastOrderAt = now(); return ok({ po });
+    };
+    E.receivePO = function (poId, receipts) {
+      const po = S.purchaseOrders.find(p => p.id === poId); if (!po) return err('not_found', 'Purchase order not found.');
+      if (po.status === 'received') return err('already_received', 'This purchase order was already received. Stock was not changed again.');
+      const recs = {}; (receipts || []).forEach(r => recs[r.sku] = r);
+      for (const l of po.lines) {
+        const it = item(l.sku), r = recs[l.sku] || {};
+        if (it.type === 'supplement') {
+          if (!String(r.lot || '').trim()) return err('lot_required', 'Enter a batch or lot number for ' + it.name + '.', { sku: l.sku, field: 'lot' });
+          if (!r.expiry) return err('expiry_required', 'Enter an expiry date for ' + it.name + '.', { sku: l.sku, field: 'expiry' });
+          if (r.mfg && r.expiry <= r.mfg) return err('expiry_invalid', 'Expiry must be after the manufacture date for ' + it.name + '.', { sku: l.sku, field: 'expiry' });
+        }
+      }
+      const t = now();
+      for (const l of po.lines) {
+        const it = item(l.sku), r = recs[l.sku] || {}; const lot = String(r.lot || '').trim() || 'L-' + it.sku + '-' + po.id;
+        let b = S.batches.find(x => x.sku === l.sku && x.lot === lot);
+        if (!b) { b = { id: 'B' + nid('B'), sku: l.sku, lot, mfg: r.mfg || null, expiry: it.type === 'supplement' ? r.expiry : null }; S.batches.push(b); }
+        addEntry({ sku: l.sku, batchId: b.id, qty: l.qty, type: 'receipt', reason: 'Received on ' + po.id, ref: po.id, by: 'Staff' });
+      }
+      po.status = 'received'; po.receivedAt = t; return ok({ po });
+    };
+
+    function velocity() {
+      const from = now() - 7 * DAY, v = {};
+      for (const e of S.ledger) if (e.at >= from && (e.type === 'sale' || e.type === 'cancel')) v[e.sku] = (v[e.sku] || 0) - e.qty;
+      for (const k in v) v[k] = v[k] / 7; return v;
+    }
+    function statusOf(it, st) {
+      if (st.available === 0) return 'out';
+      if (st.available <= it.rp) return 'low';
+      return 'ok';
+    }
+    E.inventoryRows = function (f) {
+      f = f || {}; const vel = velocity(); const q = String(f.search || '').trim().toLowerCase();
+      let rows = S.items.map(it => {
+        const st = itemStock(it.sku), sup = S.suppliers.find(s => s.id === it.supplierId); const perDay = vel[it.sku] || 0;
+        return { item: it, stock: st, supplier: sup, status: statusOf(it, st), expiredQty: st.expiredQty, expiringQty: st.expiringQty, daysOfCover: perDay > 0 ? st.available / perDay : null, perDay, gap: Math.max(0, it.rp - st.available) };
+      });
+      const all = rows.length;
+      if (q) rows = rows.filter(r => r.item.name.toLowerCase().includes(q) || r.item.sku.toLowerCase().includes(q));
+      if (f.type && f.type !== 'all') rows = rows.filter(r => r.item.type === f.type);
+      if (f.status && f.status !== 'all') rows = rows.filter(r => f.status === 'expiring' ? r.expiringQty > 0 : f.status === 'expired' ? r.expiredQty > 0 : f.status === 'low' ? (r.status === 'low' || r.status === 'out') : r.status === f.status);
+      const sort = f.sort || 'name';
+      rows.sort((a, b) => sort === 'available' ? a.stock.available - b.stock.available : sort === 'cover' ? (a.daysOfCover == null ? Infinity : a.daysOfCover) - (b.daysOfCover == null ? Infinity : b.daysOfCover) : a.item.name.localeCompare(b.item.name));
+      return { rows, total: all, totals: valuation(rows) };
+    };
+    function valuation(rows) {
+      const byType = {}; let units = 0, retail = 0, cost = 0, expiredRetail = 0;
+      for (const r of rows) {
+        const sellable = r.stock.onHand - r.stock.expiredQty, t = r.item.type;
+        byType[t] = byType[t] || { items: 0, units: 0, retail: 0, cost: 0 };
+        byType[t].items++; byType[t].units += sellable; byType[t].retail += sellable * r.item.price; byType[t].cost += sellable * r.item.cost;
+        units += sellable; retail += sellable * r.item.price; cost += sellable * r.item.cost; expiredRetail += r.stock.expiredQty * r.item.price;
+      }
+      return { units, retail, cost, expiredRetail, byType, items: rows.length };
+    }
+    E.valuation = () => valuation(E.inventoryRows().rows);
+    E.reorderAlerts = function () {
+      return E.inventoryRows().rows.filter(r => r.status !== 'ok').sort((a, b) => b.gap - a.gap).map(r => ({ sku: r.item.sku, name: r.item.name, available: r.stock.available, reorderPoint: r.item.rp, gap: r.gap, suggested: r.item.rq, supplier: r.supplier, status: r.status }));
+    };
+    E.expiryAlerts = function () {
+      const out = [];
+      for (const it of S.items) { const st = itemStock(it.sku); for (const b of st.batches) if ((b.expired || b.warning) && b.onHand > 0) out.push({ sku: it.sku, name: it.name, batch: b, expired: b.expired }); }
+      return out.sort((a, b) => (a.batch.expiry) - (b.batch.expiry));
+    };
+    E.suppliers = () => S.suppliers.map(s => ({ ...s, items: S.items.filter(i => i.supplierId === s.id), openPOs: S.purchaseOrders.filter(p => p.supplierId === s.id && p.status === 'ordered').length }));
+    E.purchaseOrders = () => S.purchaseOrders.slice().sort((a, b) => b.createdAt - a.createdAt);
+
+    /* ----- Reports ----- */
+    const live = o => o.status !== 'cancelled';
+    E.sourceOptions = () => [{ id: 'all', label: 'All sources' }, { id: 'direct', label: 'Direct (no code)' }, { id: 'referred', label: 'All referred' }].concat(S.influencers.map(i => ({ id: i.id, label: i.name })));
+    function matchSource(o, source) {
+      if (!source || source === 'all') return true; if (source === 'direct') return !o.referral; if (source === 'referred') return !!o.referral; return !!o.referral && o.referral.influencerId === source;
+    }
+    E.salesReport = function (f) {
+      f = f || {}; const t = now();
+      const from = f.from != null ? f.from : startOfDay(t - 7 * DAY), to = f.to != null ? f.to : t;
+      const placed = S.orders.filter(o => o.createdAt >= from && o.createdAt <= to && matchSource(o, f.source));
+      const liveO = placed.filter(live);
+      const net = sum(liveO, o => o.total);
+      const days = []; const first = startOfDay(t - 7 * DAY);
+      for (let i = 0; i < 8; i++) { const d0 = first + i * DAY; const d = new Date(d0); days.push({ key: dayKey(d0), label: d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric' }), revenue: 0, orders: 0 }); }
+      for (const o of liveO) { const d = days.find(x => x.key === dayKey(o.createdAt)); if (d) { d.revenue += o.total; d.orders++; } }
+      const prod = {}, chr = {};
+      for (const o of liveO) for (const l of o.lines) {
+        const p = prod[l.productId] = prod[l.productId] || { productId: l.productId, name: l.name, units: 0, revenue: 0 }; p.units += l.qty; p.revenue += l.price * l.qty;
+        const k = l.characterId || 'essentials'; const c = chr[k] = chr[k] || { id: k, name: k === 'essentials' ? 'Essentials' : E.character(k).name, units: 0, revenue: 0 }; c.units += l.qty; c.revenue += l.price * l.qty;
+      }
+      const all = !f.source || f.source === 'all';
+      return { net, orders: liveO.length, placed: placed.length, cancelled: placed.length - liveO.length, aov: liveO.length ? net / liveO.length : null, visitors: all ? S.visitors : null, conversion: all && S.visitors ? placed.length / S.visitors : null, days, products: Object.values(prod).sort((a, b) => b.revenue - a.revenue), characters: Object.values(chr).sort((a, b) => b.revenue - a.revenue) };
+    };
+    E.settlements = function () {
+      const t = now(), today = startOfDay(t), groups = {};
+      for (const o of S.orders) if (live(o)) { const k = dayKey(o.createdAt); (groups[k] = groups[k] || { key: k, day: startOfDay(o.createdAt), orders: 0, gross: 0 }); groups[k].orders++; groups[k].gross += o.total; }
+      return Object.values(groups).sort((a, b) => b.day - a.day).map(g => {
+        const expected = g.day + 2 * DAY, fee = r2(g.gross * 0.02);
+        const status = expected < today ? 'settled' : expected === today ? 'in_transit' : 'scheduled';
+        return { id: 'STL-' + g.key.replace(/-/g, ''), orderDay: g.day, orders: g.orders, gross: g.gross, fee, net: g.gross - fee, expected, status };
+      });
+    };
+    E.influencerStats = function (range) {
+      range = range || {}; const inR = t => (range.from == null || t >= range.from) && (range.to == null || t <= range.to);
+      const codeInf = {}; S.codes.forEach(c => codeInf[c.id] = c.influencerId);
+      const rows = S.influencers.map(inf => {
+        const clicks = S.visits.filter(v => v.influencerId === inf.id && inR(v.at)).length;
+        const users = S.users.filter(u => u.referral && u.referral.influencerId === inf.id && inR(u.createdAt));
+        const uids = new Set(users.map(u => u.id));
+        const orders = S.orders.filter(o => o.referral && o.referral.influencerId === inf.id && live(o) && inR(o.createdAt));
+        const buyers = new Set(S.orders.filter(o => o.userId && uids.has(o.userId) && live(o)).map(o => o.userId));
+        const entries = S.commissions.filter(e => e.influencerId === inf.id && inR(e.createdAt));
+        const by = st => r2(sum(entries.filter(e => e.status === st), e => e.amount));
+        const earned = r2(sum(entries.filter(e => e.status !== 'reversed'), e => e.amount));
+        return { influencer: inf, codes: E.codesOf(inf.id), clicks, signups: users.length, signupConversion: clicks > 0 ? users.length / clicks : null, buyers: buyers.size, orderConversion: users.length > 0 ? buyers.size / users.length : null, orders: orders.length, revenue: sum(orders, o => o.total), earned, pending: by('pending'), approved: by('approved'), paid: by('paid'), reversed: by('reversed') };
+      });
+      const totals = { active: S.influencers.filter(i => i.status === 'active').length, signups: sum(rows, r => r.signups), clicks: sum(rows, r => r.clicks), orders: sum(rows, r => r.orders), revenue: sum(rows, r => r.revenue), earned: r2(sum(rows, r => r.earned)), pending: r2(sum(rows, r => r.pending)), approved: r2(sum(rows, r => r.approved)), paid: r2(sum(rows, r => r.paid)) };
+      return { rows, totals };
+    };
+    E.influencerDetail = function (id, range) {
+      const inf = E.influencer(id); if (!inf) return null; range = range || {}; const inR = t => (range.from == null || t >= range.from) && (range.to == null || t <= range.to);
+      const users = S.users.filter(u => u.referral && u.referral.influencerId === id && inR(u.createdAt)).sort((a, b) => b.createdAt - a.createdAt);
+      const orders = S.orders.filter(o => o.referral && o.referral.influencerId === id && inR(o.createdAt)).sort((a, b) => b.createdAt - a.createdAt);
+      const entries = S.commissions.filter(e => e.influencerId === id && inR(e.createdAt)).sort((a, b) => b.createdAt - a.createdAt);
+      const payouts = S.payouts.filter(p => p.influencerId === id).sort((a, b) => b.createdAt - a.createdAt);
+      return { influencer: inf, codes: E.codesOf(id), users, orders, entries, payouts, stats: E.influencerStats(range).rows.find(r => r.influencer.id === id) };
+    };
+    E.overview = function () {
+      const sales = E.salesReport({}), alerts = E.reorderAlerts(), inf = E.influencerStats({}), st = E.settlements();
+      const open = S.orders.filter(o => ['pending', 'packed', 'shipped'].includes(o.status)).length;
+      const refOrders = S.orders.filter(o => o.referral && live(o));
+      const top = inf.rows.slice().sort((a, b) => b.revenue - a.revenue)[0];
+      const next = st.filter(s => s.status !== 'settled').sort((a, b) => a.expected - b.expected)[0] || null;
+      return { sales, open, alerts, expiry: E.expiryAlerts(), referralRevenue: sum(refOrders, o => o.total), referralOrders: refOrders.length, topInfluencer: top && top.revenue > 0 ? top : null, nextSettlement: next, recent: S.orders.slice().sort((a, b) => b.createdAt - a.createdAt).slice(0, 6), itemCount: S.items.length };
+    };
+    E.engagement = function () {
+      const orders = {}; S.orders.forEach(o => orders[o.sourceArea] = (orders[o.sourceArea] || 0) + 1);
+      const byArea = AREAS.map(a => { const sessions = (S.areaSessions[a.id] || 0); const n = orders[a.id] || 0; return { id: a.id, label: a.label, sessions, orders: n, conversion: sessions ? n / sessions : null }; });
+      const interactions = INTERACTION_AREAS.map(a => ({ id: a.id, label: a.label, count: (S.interactions[a.id] || 0) }));
+      return { byArea, interactions, totalOrders: S.orders.length, visitors: S.visitors, conversion: S.visitors ? S.orders.length / S.visitors : null, touchPoints: S.touchPoints };
+    };
+    E.track = function (area, x, y) {
+      S.interactions[area] = (S.interactions[area] || 0) + 1;
+      if (x != null && y != null) { S.touchPoints.push({ x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000, area }); if (S.touchPoints.length > 1500) S.touchPoints.shift(); }
+    };
+    E.startSession = function (area) { S.visitors++; S.areaSessions[area] = (S.areaSessions[area] || 0) + 1; };
+
+    /* ----- Consistency checks (used by tests and the dashboard footer) ----- */
+    E.selfCheck = function () {
+      const problems = [];
+      const oh = onHandMap(); const sums = {}; S.ledger.forEach(e => sums[e.batchId] = (sums[e.batchId] || 0) + e.qty);
+      for (const id in sums) if (sums[id] !== (oh[id] || 0)) problems.push('on-hand mismatch ' + id);
+      for (const b of S.batches) if ((oh[b.id] || 0) < 0) problems.push('negative stock ' + b.id);
+      const earned = r2(sum(S.commissions.filter(e => e.status !== 'reversed'), e => e.amount));
+      const st = E.influencerStats({}).totals; if (Math.abs(earned - st.earned) > 0.01) problems.push('commission total mismatch');
+      const keys = new Set(); for (const e of S.commissions) { if (keys.has(e.key)) problems.push('duplicate commission key ' + e.key); keys.add(e.key); }
+      for (const p of S.payouts) if (p.status === 'paid') for (const id of p.entryIds) if (E.commissionEntry(id).status !== 'paid') problems.push('payout entry not paid ' + id);
+      return problems;
+    };
+
+    return E;
+  }
+
+  /* ---------- Seed data ---------- */
+  function seedState(nowMs) {
+    const rnd = mulberry32(20261114);
+    const pick = arr => arr[Math.floor(rnd() * arr.length)];
+    const between = (a, b) => a + rnd() * (b - a);
+    const wpick = (items, weights) => { let t = sum(weights), x = rnd() * t; for (let i = 0; i < items.length; i++) { x -= weights[i]; if (x < 0) return items[i]; } return items[items.length - 1]; };
+    const S = blankState(nowMs);
+    const E = createEngine({ state: S, clock: () => nowMs });
+    const seq = prefix => { S.seq[prefix] = (S.seq[prefix] || 0) + 1; return S.seq[prefix]; };
+
+    // Batches with a very large temporary opening balance; replaced by the real opening stock at the end.
+    for (const it of ITEMS) for (const bt of it.batches) {
+      const b = { id: 'B' + seq('B'), sku: it.sku, lot: bt.lot, mfg: bt.mfgDays == null ? null : nowMs + bt.mfgDays * DAY, expiry: bt.expiryDays == null ? null : nowMs + bt.expiryDays * DAY, target: bt.target };
+      S.batches.push(b);
+      S.ledger.push({ id: 'L' + seq('L'), at: nowMs - 9 * DAY, sku: it.sku, batchId: b.id, qty: 1e6, type: 'receipt', reason: 'seed-base', ref: 'seed-base', by: 'System' });
+    }
+
+    // Influencers and codes
+    const mkInf = (name, type, handle, commission, status, extra) => { const i = { id: 'I' + seq('I'), name, type, handle, email: (extra && extra.email) || name.toLowerCase().replace(/[^a-z]+/g, '.') + '@mail.example', phone: (extra && extra.phone) || null, status: status || 'active', commission, deviceMarkers: [], createdAt: nowMs - 9 * DAY }; S.influencers.push(i); return i; };
+    const mkCode = (inf, code, status, expiresAt) => { const c = { id: 'K' + seq('K'), code, influencerId: inf.id, status: status || 'active', expiresAt: expiresAt || null, createdAt: nowMs - 9 * DAY }; S.codes.push(c); return c; };
+    const ritu = mkInf('Ritu Sharma', 'instructor', '@ritu.moves', { fixed: 75, percent: 0 }, 'active', { phone: '9810011122' });
+    const dev = mkInf('Dev Malhotra', 'social', '@devlifts', { fixed: 50, percent: 3 });
+    const ananya = mkInf('Ananya Rao', 'social', '@ananya.flow', { fixed: 60, percent: 2 });
+    const kabir = mkInf('Kabir Singh', 'instructor', '@coachkabir', null);
+    const meera = mkInf('Meera Iyer', 'other', 'Studio Meera', null);
+    const arvind = mkInf('Arvind Nair', 'other', '@arvind.trains', null, 'active');
+    const cRitu = mkCode(ritu, 'ARJUN-RITU10'), cRitu2 = mkCode(ritu, 'RITU-SITA');
+    const cDev = mkCode(dev, 'DEV-BHEEMA'), cAnanya = mkCode(ananya, 'ANANYA-SITA15'), cKabir = mkCode(kabir, 'KABIR-KARNA');
+    mkCode(kabir, 'KABIR-DIWALI', 'active', nowMs - 2 * DAY); const cMeera = mkCode(meera, 'MEERA-FORM', 'active'); const cArvind = mkCode(arvind, 'ARVIND-ENDED');
+
+    const events = []; const ev = (t, fn) => events.push({ t, fn });
+
+    // Link visits
+    const clicks = [[cRitu, 300], [cRitu2, 128], [cDev, 612], [cAnanya, 301], [cKabir, 117], [cMeera, 64], [cArvind, 41]];
+    for (const [c, n] of clicks) for (let i = 0; i < n; i++) { const t = nowMs - DAY * 7 * Math.pow(rnd(), 1.1) - 60000; S.visits.push({ id: 'V' + seq('V'), codeId: c.id, influencerId: c.influencerId, at: t }); }
+
+    // Registrations
+    const first = ['Aarav', 'Vihaan', 'Ishaan', 'Kavya', 'Diya', 'Anika', 'Rohan', 'Neha', 'Siddharth', 'Pooja', 'Rahul', 'Sneha', 'Manish', 'Tanvi', 'Harsh', 'Nisha', 'Varun', 'Aditi', 'Karthik', 'Lakshmi', 'Imran', 'Farah', 'Gurpreet', 'Simran', 'Arun', 'Divya', 'Yash', 'Ira', 'Naveen', 'Swati'];
+    const last = ['Reddy', 'Patel', 'Gupta', 'Nair', 'Menon', 'Kapoor', 'Joshi', 'Verma', 'Khan', 'Iyer', 'Bose', 'Rao', 'Das', 'Shetty', 'Mehta', 'Pillai', 'Sinha', 'Chopra', 'Naidu', 'Bhat'];
+    const uniq = new Set(); const person = () => { let n; do { n = pick(first) + ' ' + pick(last); } while (uniq.has(n)); uniq.add(n); return n; };
+    const regs = [[cRitu, 19], [cRitu2, 11], [cDev, 24], [cAnanya, 17], [cKabir, 9], [cMeera, 4], [cArvind, 3], [null, 8]];
+    for (const [c, n] of regs) for (let i = 0; i < n; i++) {
+      const name = person(), slug = name.toLowerCase().replace(/[^a-z]+/g, '.');
+      const t = c === cArvind ? nowMs - between(5.5, 6.9) * DAY : nowMs - DAY * 7 * Math.pow(rnd(), 1.05) - 30 * MIN;
+      const phone = '9' + String(100000000 + Math.floor(rnd() * 899999999));
+      ev(t, () => E.register({ name, email: slug + Math.floor(rnd() * 90 + 10) + '@mail.example', phone, code: c ? c.code : '', deviceMarker: 'dev-' + Math.floor(rnd() * 1e6), continueWithoutCode: true }));
+    }
+
+    // Orders
+    const areaPool = []; AREAS.forEach(a => { for (let i = 0; i < a.orders; i++) areaPool.push(a.id); });
+    for (let i = areaPool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [areaPool[i], areaPool[j]] = [areaPool[j], areaPool[i]]; }
+    const kitW = [22, 20, 14, 17, 12, 15], itemIds = ITEMS.map(i => 'item-' + i.sku), itemW = ITEMS.map(i => i.type === 'supplement' ? 4 : 1.2);
+    for (let n = 0; n < 349; n++) {
+      const t = nowMs - DAY * 7 * Math.pow(rnd(), 1.15) - 2 * MIN; const area = areaPool[n];
+      ev(t, () => {
+        const lines = []; const q = () => (rnd() < 0.1 ? 2 : 1);
+        if (rnd() < 0.8) lines.push({ productId: 'kit-' + wpick(KITS, kitW).id, qty: q() }); else lines.push({ productId: wpick(itemIds, itemW), qty: q() });
+        if (rnd() < 0.12) { const p2 = rnd() < 0.5 ? 'kit-' + wpick(KITS, kitW).id : wpick(itemIds, itemW); if (!lines.some(l => l.productId === p2)) lines.push({ productId: p2, qty: 1 }); }
+        const pool = S.users.filter(u => u.createdAt < t - MIN); let user = null;
+        if (pool.length && rnd() < 0.34) user = pick(pool);
+        const r = E.reserve(lines, { minutes: 10 }); if (!r.ok) return;
+        const nm = user ? user.name : person(), email = user ? user.email : nm.toLowerCase().replace(/[^a-z]+/g, '.') + '@mail.example';
+        const res = E.placeOrder({ reservationId: r.reservation.id, customer: { name: nm, email, phone: user ? user.phone : '' }, userId: user ? user.id : null, sourceArea: area, by: 'Shopper' });
+        if (!res.ok) return; const oid = res.order.id; const u = rnd();
+        const sched = (dt, to) => { const tt = t + dt; if (tt < nowMs - 2 * MIN) ev(tt, () => E.transition(oid, to, 'Ops team')); };
+        if (u < 0.05) sched(between(2, 14) * HOUR, 'cancelled');
+        else if (u < 0.07) { const a = between(1, 6) * HOUR; sched(a, 'packed'); sched(a + between(4, 14) * HOUR, 'cancelled'); }
+        else { const a = between(1, 8) * HOUR, b = a + between(4, 26) * HOUR, c = b + between(24, 70) * HOUR; sched(a, 'packed'); sched(b, 'shipped'); sched(c, 'delivered'); }
+      });
+    }
+
+    // Stock adjustments
+    const adj = (daysAgo, sku, delta, reason) => ev(nowMs - daysAgo * DAY, () => { const b = S.batches.find(x => x.sku === sku); E.adjust({ sku, batchId: b.id, delta, reason, by: 'Inventory lead' }); });
+    adj(5.2, 'YM-001', -2, 'Damaged in transit'); adj(3.1, 'SH-001', 5, 'Found stock'); adj(1.4, 'KS-002', -1, 'Cycle count correction');
+
+    // Commission approvals and payouts, applied by the same functions the dashboard uses
+    const approvalAfter = 28 * HOUR;
+    ev(nowMs - 20 * HOUR, () => {
+      for (const e of S.commissions.slice()) if (e.status === 'pending' && e.createdAt + approvalAfter < nowMs - 20 * HOUR && e.influencerId !== meera.id) E.withTime(e.createdAt + approvalAfter, () => E.approveEntry(e.id));
+    });
+    ev(nowMs - 14 * HOUR, () => { [ritu, dev].forEach((inf, i) => E.recordPayout(inf.id, i ? 'UPI-DEV-261113' : 'NEFT-RTU-261113', nowMs - 14 * HOUR, 'seed-' + inf.id)); });
+    ev(nowMs - 6 * HOUR, () => {
+      for (const e of S.commissions.slice()) if (e.status === 'pending' && e.createdAt + approvalAfter < nowMs - 6 * HOUR && e.influencerId === ananya.id) E.withTime(e.createdAt + approvalAfter, () => E.approveEntry(e.id));
+    });
+    ev(nowMs - 30 * HOUR, () => {
+      const e = S.commissions.find(x => x.influencerId === arvind.id && x.status === 'pending'); if (e) E.reverseEntry(e.id, 'Signup flagged as a duplicate person');
+    });
+    ev(nowMs - 4 * HOUR, () => { arvind.status = 'ended'; });
+    ev(nowMs - 10 * HOUR, () => { cMeera.status = 'paused'; });
+
+    events.sort((a, b) => a.t - b.t);
+    for (const e of events) E.withTime(Math.min(e.t, nowMs), e.fn);
+
+    // Replace temporary balance with real opening stock so on-hand ends at each batch target
+    S.ledger = S.ledger.filter(e => e.ref !== 'seed-base');
+    const left = {}; S.ledger.forEach(e => left[e.batchId] = (left[e.batchId] || 0) + e.qty);
+    for (const b of S.batches) {
+      const need = b.target - (left[b.id] || 0); delete b.target;
+      S.ledger.push({ id: 'L' + seq('L'), at: nowMs - 9 * DAY, sku: b.sku, batchId: b.id, qty: Math.max(0, need), type: 'receipt', reason: 'Opening stock', ref: 'opening', by: 'System' });
+    }
+    S.ledger.sort((a, b) => a.at - b.at);
+
+    // Open purchase orders
+    E.withTime(nowMs - 1.5 * DAY, () => { E.createPO('S1', [{ sku: 'TM-001', qty: 60 }]); });
+    E.withTime(nowMs - 2.2 * DAY, () => { E.createPO('S2', [{ sku: 'KS-002', qty: 50 }, { sku: 'YB-002', qty: 80 }]); });
+    S.suppliers.forEach((s, i) => { if (!s.lastOrderAt) s.lastOrderAt = nowMs - (9 + i * 3) * DAY; });
+
+    // Interaction counters and touch points
+    const total = sum(AREAS, a => a.sessions); S.visitors = total;
+    AREAS.forEach(a => S.areaSessions[a.id] = a.sessions);
+    INTERACTION_AREAS.forEach(a => S.interactions[a.id] = a.seed);
+    const zones = { nav: [0.5, 0.04, 0.4, 0.03], hero: [0.5, 0.2, 0.28, 0.07], picker: [0.5, 0.36, 0.38, 0.04], shop: [0.5, 0.6, 0.3, 0.12], detail: [0.5, 0.72, 0.26, 0.06], compare: [0.62, 0.5, 0.2, 0.05], cart: [0.82, 0.04, 0.05, 0.02], checkout: [0.5, 0.9, 0.22, 0.04], referral: [0.5, 0.46, 0.25, 0.03] };
+    const gauss = () => (rnd() + rnd() + rnd() - 1.5) / 1.5;
+    for (const a of INTERACTION_AREAS) { const z = zones[a.id], n = Math.round(a.seed / 14); for (let i = 0; i < n; i++) S.touchPoints.push({ x: Math.min(0.98, Math.max(0.02, z[0] + gauss() * z[2])), y: Math.min(0.98, Math.max(0.02, z[1] + gauss() * z[3])), area: a.id }); }
+    return S;
+  }
+
+  return { createEngine, seedState, CHARACTERS, KITS, ITEMS, SUPPLIERS, AREAS, ADJUST_REASONS, DAY, HOUR, MIN, dayKey, startOfDay, normCode };
+});
+
+</script>
+<script>
+/* ---------- Shared helpers, state and storefront views ---------- */
+const C = window.Cofoco;
+const KEY = 'cofoco-demo-state-v1', UKEY = 'cofoco-demo-ui-v1';
+let E;
+function initEngine() {
+  let st = null;
+  try { const raw = localStorage.getItem(KEY); if (raw) { st = JSON.parse(raw); if (!st || st.version !== 1 || Date.now() - st.createdAt > 2 * 86400000 || !st.orders) st = null; } } catch (e) { st = null; }
+  E = C.createEngine({ state: st || undefined });
+}
+const U = {
+  role: 'shopper', infId: null, cart: [], reservationId: null, pendingCode: null, userId: null, compare: [], lastOrderId: null,
+  deviceMarker: 'dev-' + Math.random().toString(36).slice(2, 10), entry: 'shop', pickerChar: 'arjun', shopChar: 'all', essType: 'all',
+  modal: null, toast: null, checkoutError: null, form: {}, regResult: null, regForm: {}, regCodeMsg: null, trackId: '',
+  inv: { search: '', type: 'all', status: 'all', sort: 'name', open: {} }, ord: { status: 'all', open: null }, sales: { source: 'all' },
+  inf: { range: 'all', sel: null, board: 'signups', createMsg: null }, settingsMsg: null
+};
+function loadUI() { try { const s = JSON.parse(localStorage.getItem(UKEY) || 'null'); if (s) ['role', 'infId', 'cart', 'pendingCode', 'userId', 'compare', 'lastOrderId', 'deviceMarker', 'entry'].forEach(k => { if (s[k] !== undefined) U[k] = s[k]; }); } catch (e) { } }
+let saveT;
+function save() {
+  clearTimeout(saveT);
+  saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(E.state())); } catch (e) { } }, 250);
+  try { localStorage.setItem(UKEY, JSON.stringify({ role: U.role, infId: U.infId, cart: U.cart, pendingCode: U.pendingCode, userId: U.userId, compare: U.compare, lastOrderId: U.lastOrderId, deviceMarker: U.deviceMarker, entry: U.entry })); } catch (e) { }
+}
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const inr2 = n => '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const pct = v => v == null ? '—' : (v * 100).toFixed(2) + '%';
+const pct1 = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+const num = n => Number(n).toLocaleString('en-IN');
+const dt = ts => ts ? new Date(ts).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '—';
+const dd = ts => ts ? new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+const dshort = ts => ts ? new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—';
+const status = (txt, cls) => `<span class="status ${cls}">${esc(txt)}</span>`;
+const cart = () => U.cart;
+const cartCount = () => U.cart.reduce((a, l) => a + l.qty, 0);
+const char = id => E.character(id);
+const typeLabel = t => ({ kit: 'Kit', accessory: 'Accessory', equipment: 'Equipment', supplement: 'Supplement' }[t] || t);
+const infTypeLabel = t => ({ instructor: 'Instructor', social: 'Social media', other: 'Other' }[t] || t);
+const ORDER_STATUS = { pending: ['Pending', 's-warn'], packed: ['Packed', 's-info'], shipped: ['Shipped', 's-info'], delivered: ['Delivered', 's-good'], cancelled: ['Cancelled', 's-bad'] };
+const orderStatus = s => status(ORDER_STATUS[s][0], ORDER_STATUS[s][1]);
+const ENTRY_STATUS = { pending: ['Pending', 's-warn'], approved: ['Approved', 's-info'], paid: ['Paid', 's-good'], reversed: ['Reversed', 's-bad'] };
+const entryStatus = s => status(ENTRY_STATUS[s][0], ENTRY_STATUS[s][1]);
+
+/* ---------- Artwork ---------- */
+function motifSvg(m, a) {
+  const g = (inner, extra) => `<g fill="none" stroke="${a}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra || ''}>${inner}</g>`;
+  const wave = (y, o) => `<path d="M105 ${y}q22-10 45 0t45 0t45 0t45 0t30 0" opacity="${o}"/>`;
+  if (m === 'moon') return g(`<path d="M232 84a64 64 0 1 0 30 104a52 52 0 1 1 -30 -104z"/>${wave(214, 0.7)}${wave(232, 0.4)}<circle cx="276" cy="96" r="2.5" fill="${a}"/><circle cx="300" cy="126" r="1.8" fill="${a}"/>`);
+  if (m === 'mountain') return g(`<path d="M86 224 L168 108 L214 172 L250 128 L324 224 Z"/><path d="M168 108 l-24 36 l24 -10 l22 15" opacity=".6"/><path d="M96 238h220" opacity=".4"/>`);
+  if (m === 'sun') { let r = ''; for (let i = 0; i < 16; i++) { const t = i * Math.PI / 8, x1 = 200 + Math.cos(t) * 46, y1 = 148 + Math.sin(t) * 46, x2 = 200 + Math.cos(t) * (i % 2 ? 62 : 74), y2 = 148 + Math.sin(t) * (i % 2 ? 62 : 74); r += `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}"/>`; } return g(`<circle cx="200" cy="148" r="34"/>${r}`); }
+  if (m === 'lotus') { let p = ''; [-64, -32, 0, 32, 64].forEach(an => { p += `<ellipse cx="200" cy="140" rx="17" ry="50" transform="rotate(${an} 200 196)"/>`; }); return g(`${p}${wave(212, 0.7)}${wave(230, 0.4)}`); }
+  if (m === 'rose') return g(`<circle cx="200" cy="148" r="12"/><circle cx="200" cy="148" r="26" stroke-dasharray="46 14"/><circle cx="200" cy="148" r="41" stroke-dasharray="70 18" transform="rotate(30 200 148)"/><circle cx="200" cy="148" r="58" stroke-dasharray="100 24" transform="rotate(70 200 148)"/>`);
+  if (m === 'olive') { let l = ''; for (let i = 1; i <= 6; i++) { const t = i / 7, x = (1 - t) * (1 - t) * 128 + 2 * (1 - t) * t * 200 + t * t * 284, y = (1 - t) * (1 - t) * 218 + 2 * (1 - t) * t * 158 + t * t * 92, s = i % 2 ? -1 : 1; l += `<ellipse cx="${(x + s * 12).toFixed(1)}" cy="${(y - s * 12).toFixed(1)}" rx="8" ry="20" transform="rotate(${s * 40 + 28} ${x.toFixed(1)} ${y.toFixed(1)})"/>`; } return g(`<path d="M128 218Q200 158 284 92"/>${l}`); }
+  return '';
+}
+function itemGlyph(p) {
+  const a = '#c9a24f', g = i => `<g fill="none" stroke="${a}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".9">${i}</g>`;
+  if (p.itemType === 'supplement') return g('<rect x="156" y="112" width="88" height="112" rx="14"/><rect x="164" y="90" width="72" height="24" rx="6"/><path d="M156 150h88M156 190h88" opacity=".5"/>');
+  if (p.itemType === 'equipment') return g('<rect x="110" y="116" width="180" height="76" rx="38"/><path d="M146 116v76M254 116v76" opacity=".5"/>');
+  return g('<ellipse cx="200" cy="150" rx="78" ry="44"/><ellipse cx="200" cy="150" rx="50" ry="24"/>');
+}
+let artSeq = 0;
+function plate(motif, accent, label, name) {
+  const gid = 'pg' + (++artSeq);
+  return `<svg viewBox="0 0 400 300" role="img" aria-label="${esc(name)} artwork" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="${gid}" cx="64%" cy="40%" r="72%"><stop offset="0" stop-color="#8a5a1e" stop-opacity=".8"/><stop offset=".55" stop-color="#2a1c0d"/><stop offset="1" stop-color="#0d0a07"/></radialGradient></defs><rect width="400" height="300" fill="url(#${gid})"/>${motif}<path d="M20 262h40" stroke="${accent}" stroke-width="2"/><text x="20" y="282" fill="#e6c981" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="2.4">${esc(label)}</text></svg>`;
+}
+function art(p) {
+  const ch = p.characterId ? char(p.characterId) : null;
+  if (ch) return plate(motifSvg(ch.motif, ch.accent), ch.accent, 'KIT · ' + ch.name.toUpperCase(), p.name);
+  return plate(itemGlyph(p), '#c9a24f', (p.itemType || '').toUpperCase() + ' · ' + p.sku, p.name);
+}
+function charArt(ch) { return plate(motifSvg(ch.motif, ch.accent), ch.accent, ch.name.toUpperCase() + ' BY COFOCO', ch.name); }
+
+/* ---------- Shell pieces ---------- */
+function demoBar() {
+  const infs = E.state().influencers;
+  const val = U.role === 'influencer' ? 'influencer:' + U.infId : U.role;
+  return `<div class="wrap demobar" role="region" aria-label="Demo controls"><span><b>Demo</b> &nbsp; Demo data. No payment provider is connected.</span>
+  <span class="ctl"><label for="roleSel">View as</label><select id="roleSel" data-change="role"><option value="shopper" ${val === 'shopper' ? 'selected' : ''}>Shopper</option><option value="founder" ${val === 'founder' ? 'selected' : ''}>Founder</option><option value="staff" ${val === 'staff' ? 'selected' : ''}>Staff</option>${infs.map(i => `<option value="influencer:${i.id}" ${val === 'influencer:' + i.id ? 'selected' : ''}>Influencer: ${esc(i.name)}</option>`).join('')}</select>
+  <button class="chip" data-act="openReset">Reset demo data</button></span></div>`;
+}
+function navHtml(r) {
+  const cur = n => r.name === n ? ' aria-current="page"' : '';
+  return `<header class="nav" data-area="nav"><a class="logo" href="#home" aria-label="COFOCO home">COFOCO<span class="dot"></span></a>
+  <a class="l" href="#shop"${cur('shop')}>Shop</a><a class="l" href="#characters"${cur('characters')}>Characters</a><a class="l hide-s" href="#about"${cur('about')}>About</a>
+  <a class="pillnav" href="#founder-inventory" data-act="toFounder" data-tab="inventory">Inventory</a>
+  <a class="cartbtn" href="#cart" aria-label="Bag, ${cartCount()} items"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>${cartCount() ? `<span class="n">${cartCount()}</span>` : ''}</a></header>`;
+}
+function footerHtml() {
+  return `<footer class="footer wrap"><div class="big">COFOCO <em>Conscious Form Company</em></div><p>Kits built around a mindset. Character names, artwork and copy are drawn from Indian epics and need brand-team approval before publication.</p>
+  <p class="row"><span class="tag">Demo</span> No payment, courier or email provider is connected. Supplement labeling and sale rules in India must be verified before any real sale.</p>
+  <p class="row"><a href="#about" class="muted">About</a><a href="#track" class="muted">Track an order</a><a href="#register" class="muted">Register with a code</a><a href="#founder-overview" class="muted" data-act="toFounder" data-tab="overview">Founder dashboard</a></p></footer>`;
+}
+function stockBadge(av) { return av.state === 'out' ? status('Sold out', 's-bad') : av.state === 'low' ? status('Only ' + av.sellable + ' left', 's-warn') : status('In stock', 's-good'); }
+function itemSummary(p) {
+  if (p.kind === 'kit') return E.contentsSummary(p.id);
+  const it = E.item(p.sku); return it.category + (it.supp ? ' · ' + it.supp.flavor + ', ' + it.supp.servings + ' servings' : '');
+}
+function productCard(p, area) {
+  const av = E.productAvailability(p.id), ch = p.characterId ? char(p.characterId) : null, out = av.state === 'out';
+  const inCmp = U.compare.includes(p.id);
+  return `<article class="pcard" data-area="${area}"><a class="art" href="#${p.id}" aria-label="${esc(p.name)} details">${art(p)}</a>
+  <div class="body"><div class="meta"><span class="cchip">${ch ? `<i style="--c:${ch.accent}"></i>${esc(ch.name)} by COFOCO` : esc(typeLabel(p.itemType))}</span>${stockBadge(av)}</div>
+  <h3><a href="#${p.id}">${esc(p.name)}</a></h3><p class="sum">${esc(itemSummary(p))}</p>
+  <div class="foot"><span class="price">${inr(p.price)}</span><span class="row">${p.kind === 'kit' ? `<button class="chip" data-act="cmp" data-id="${p.id}" aria-pressed="${inCmp}">Compare</button>` : ''}<button class="btn btn-sm" data-act="add" data-id="${p.id}" data-area="${area}" ${out ? 'disabled' : ''}>${out ? 'Unavailable' : 'Add to bag'}</button></span></div></div></article>`;
+}
+function emptyState(title, text, btn) {
+  return `<div class="empty"><h3>${esc(title)}</h3><p>${esc(text)}</p>${btn || ''}</div>`;
+}
+
+/* ---------- Storefront views ---------- */
+function viewHome() {
+  const chs = E.catalog.characters, sel = char(U.pickerChar) || chs[0], kit = E.product('kit-' + sel.kitId), kav = E.productAvailability(kit.id);
+  const kits = E.products().filter(p => p.kind === 'kit');
+  return `<section class="hero" data-area="hero"><div class="hero-bg" aria-hidden="true"></div>
+  <svg class="hero-arc" data-px viewBox="0 0 400 400" fill="none" stroke="#c9a24f" stroke-width="1" aria-hidden="true"><circle cx="200" cy="200" r="190" opacity=".35"/><circle cx="200" cy="200" r="140" opacity=".25"/><circle cx="200" cy="200" r="90" opacity=".2"/><path d="M10 200h380M200 10v380" opacity=".12"/></svg>
+  <div class="wrap"><p class="eyebrow rise">Conscious Form Company</p>
+  <h1 class="rise d2">Training kits that <em>move the body.</em></h1>
+  <p class="lede rise d3">Six mindsets drawn from Indian epics. Each comes with a kit, a routine cue and nothing you do not need.</p>
+  <div class="cta-row rise d3"><button class="btn arrow" data-act="scrollTo" data-target="picker" data-entry="hero">Find your character&nbsp;</button><a class="btn btn-o arrow" href="#shop" data-act="entry" data-entry="hero">Shop kits&nbsp;</a></div>
+  <ul class="char-row" aria-label="Characters">${chs.map(c => `<li><a href="#character-${c.id}" style="--c:${c.accent}" data-act="entry" data-entry="hero">${esc(c.name)}</a></li>`).join('')}</ul></div></section>
+  <section class="section wrap" id="picker" data-area="picker"><div class="section-head"><div class="stack-s"><span class="eyebrow">Mindset picker</span><h2>Start with how you want to <em>feel.</em></h2></div><p>Choose a mindset and jump to its collection and kit.</p></div>
+  <div class="picker"><div class="stack"><div class="pick-list" role="group" aria-label="Choose a character">${chs.map(c => `<button class="chip" style="--c:${c.accent}" data-act="pick" data-id="${c.id}" aria-pressed="${c.id === sel.id}"><span class="swatch" style="--c:${c.accent}"></span>${esc(c.name)}</button>`).join('')}</div>
+  <div class="pick-panel" style="--c:${sel.accent}"><span class="cchip"><i style="--c:${sel.accent}"></i>${esc(sel.name)} by COFOCO</span><h3>${esc(sel.mindset)}</h3>
+  <div class="kv"><span class="k">Routine cue</span><span>${esc(sel.cue)}</span></div><div class="kv"><span class="k">Kit</span><span>${esc(kit.name)} · ${inr(kit.price)} ${stockBadge(kav)}</span></div>
+  <div class="row"><a class="btn arrow" href="#character-${sel.id}" data-act="entry" data-entry="picker">See ${esc(sel.name)}&rsquo;s collection&nbsp;</a><a class="btn btn-o" href="#${kit.id}" data-act="entry" data-entry="picker">View kit</a></div></div></div>
+  <div class="card" style="padding:0;overflow:hidden;min-height:260px"><div style="aspect-ratio:4/3">${charArt(sel)}</div></div></div></section>
+  <section class="section wrap" data-area="referral"><div class="refstrip"><div><span class="eyebrow">Referral</span><p class="muted" style="margin-top:6px">${U.pendingCode ? `Code <b style="color:var(--gold-hi)">${esc(U.pendingCode)}</b> is applied. It carries through to registration and checkout.` : 'Have a code from an instructor or a friend? Enter it here and it follows you to registration.'}</p></div>
+  ${U.pendingCode ? `<div class="row"><a class="btn btn-sm" href="#register">Register with this code</a><button class="chip" data-act="clearCode">Remove code</button></div>` : `<form data-form="applycode"><label class="sr" for="homeCode">Referral code</label><input id="homeCode" name="code" placeholder="e.g. ARJUN-RITU10" autocomplete="off" style="width:220px"><button class="btn btn-sm btn-o" type="submit">Apply code</button></form>`}</div>${U.codeMsg ? `<div class="msg ${U.codeMsg.ok ? 'good' : 'bad'}" style="margin-top:12px" role="status">${esc(U.codeMsg.text)}</div>` : ''}</section>
+  <section class="section wrap" data-area="shop"><div class="section-head"><div class="stack-s"><span class="eyebrow">The kits</span><h2>One kit per <em>mindset.</em></h2></div><a class="btn btn-o arrow" href="#shop">All products&nbsp;</a></div><div class="grid g3">${kits.map(k => productCard(k, 'shop')).join('')}</div></section>`;
+}
+function viewCharacters() {
+  const chs = E.catalog.characters;
+  return `<section class="section wrap" style="border:0"><div class="section-head"><div class="stack-s"><span class="eyebrow">Characters</span><h1 style="font-size:clamp(2.4rem,7vw,4.4rem)">Six minds, six <em>routines.</em></h1></div><p>Each character gives a kit its mindset. Colour is always paired with a name, never used alone.</p></div>
+  <div class="grid g3">${chs.map(c => `<a class="pcard" href="#character-${c.id}" style="border-top:2px solid ${c.accent}"><span class="art">${charArt(c)}</span><span class="body"><span class="meta"><span class="cchip"><i style="--c:${c.accent}"></i>${esc(c.accentName)}</span>${c.draft ? '<span class="pending-chip">Draft copy</span>' : ''}</span><h3>${esc(c.name)} <span class="muted" style="font-size:.9rem;font-family:var(--font-body)">by COFOCO</span></h3><span class="sum">${esc(c.mindset)}</span></span></a>`).join('')}</div></section>`;
+}
+function viewCharacter(id) {
+  const c = char(id); if (!c) return emptyState('Character not found', 'Choose one of the six characters.', '<a class="btn" href="#characters">See characters</a>');
+  const kit = E.product('kit-' + c.kitId);
+  return `<div class="wrap"><p class="crumbs"><a href="#characters">Characters</a> / ${esc(c.name)}</p><div class="detail" data-area="detail"><div class="art" style="border-top:2px solid ${c.accent}">${charArt(c)}</div>
+  <div class="stack"><span class="cchip" style="--c:${c.accent}"><i style="--c:${c.accent}"></i>${esc(c.name)} by COFOCO</span><h1 style="font-size:clamp(2.6rem,7vw,4.6rem)">${esc(c.name)}</h1>
+  ${c.draft ? '<p><span class="pending-chip">Draft copy, pending brand review</span></p>' : ''}<p class="lede">${esc(c.story)}</p>
+  <div class="grid g2"><div class="kv"><span class="k">Source</span><span>${esc(c.source)}</span></div><div class="kv"><span class="k">Defining quality</span><span>${esc(c.quality)}</span></div><div class="kv"><span class="k">Mindset</span><span>${esc(c.mindset)}</span></div><div class="kv"><span class="k">Routine cue</span><span>${esc(c.cue)}</span></div></div>
+  <div class="row"><button class="chip" data-act="cmp" data-id="${kit.id}" aria-pressed="${U.compare.includes(kit.id)}">Compare this kit</button><a class="btn btn-o" href="#compare">Open comparison</a></div></div></div>
+  <div class="section-head"><h2>${esc(c.name)}&rsquo;s kit</h2></div><div class="grid g3" style="padding-bottom:50px">${productCard(kit, 'detail')}</div></div>`;
+}
+function viewShop() {
+  const chs = E.catalog.characters; const prods = E.products();
+  let kits = prods.filter(p => p.kind === 'kit'); if (U.shopChar !== 'all') kits = kits.filter(k => k.characterId === U.shopChar);
+  let items = prods.filter(p => p.kind === 'item'); if (U.essType !== 'all') items = items.filter(p => p.itemType === U.essType);
+  return `<section class="section wrap" style="border:0" data-area="shop"><div class="section-head"><div class="stack-s"><span class="eyebrow">Shop</span><h1 style="font-size:clamp(2.4rem,7vw,4.4rem)">Kits and <em>essentials.</em></h1></div><p>Prices in INR. Kit stock is worked out from the parts each kit contains.</p></div>
+  <div class="row" role="group" aria-label="Filter kits by character" style="margin-bottom:20px"><button class="chip" data-act="shopChar" data-id="all" aria-pressed="${U.shopChar === 'all'}">All characters</button>${chs.map(c => `<button class="chip" data-act="shopChar" data-id="${c.id}" aria-pressed="${U.shopChar === c.id}"><span class="swatch" style="--c:${c.accent}"></span>${esc(c.name)}</button>`).join('')}</div>
+  ${kits.length ? `<div class="grid g3">${kits.map(k => productCard(k, 'shop')).join('')}</div>` : emptyState('No kits match', 'Try another character.', '<button class="btn btn-o" data-act="shopChar" data-id="all">Show all kits</button>')}
+  </section><section class="section wrap" data-area="shop"><div class="section-head"><div class="stack-s"><span class="eyebrow">Essentials</span><h2>Gear and <em>supplements.</em></h2></div><div class="row" role="group" aria-label="Filter essentials by type">${['all', 'accessory', 'equipment', 'supplement'].map(t => `<button class="chip" data-act="essType" data-id="${t}" aria-pressed="${U.essType === t}">${t === 'all' ? 'All types' : typeLabel(t)}</button>`).join('')}</div></div>
+  ${U.essType === 'supplement' || U.essType === 'all' ? '<div class="msg warn" style="margin-bottom:16px">Demo listing. Supplement labeling and sale rules in India must be verified before any real sale.</div>' : ''}
+  ${items.length ? `<div class="grid g3">${items.map(p => productCard(p, 'shop')).join('')}</div>` : emptyState('Nothing in this type', 'Try another type.', '<button class="btn btn-o" data-act="essType" data-id="all">Show all</button>')}</section>`;
+}
+function viewProduct(id) {
+  const p = E.product(id); if (!p) return emptyState('Product not found', 'It may have been removed.', '<a class="btn" href="#shop">Back to shop</a>');
+  const av = E.productAvailability(id), ch = p.characterId ? char(p.characterId) : null, out = av.state === 'out';
+  let extra = '';
+  if (p.kind === 'item') {
+    const it = E.item(p.sku), st = E.itemStock(p.sku);
+    if (it.supp) {
+      const live = st.batches.filter(b => !b.expired && b.available > 0).sort((a, b) => a.expiry - b.expiry)[0];
+      extra = `<div class="card stack-s"><h4>Supplement details</h4><div class="grid g2"><div class="kv"><span class="k">Serving</span><span>${esc(it.supp.servingSize)}, ${it.supp.servings} per pack</span></div><div class="kv"><span class="k">Flavor or form</span><span>${esc(it.supp.flavor)}</span></div><div class="kv"><span class="k">Storage</span><span>${esc(it.supp.storage)}</span></div><div class="kv"><span class="k">Ships from batch</span><span>${live ? esc(live.lot) + ', best before ' + dd(live.expiry) : 'No sellable batch'}</span></div></div>${live && live.warning ? status('Short-dated batch, expires in ' + live.daysToExpiry + ' days', 's-warn') : ''}</div>`;
+    }
+  }
+  return `<div class="wrap"><p class="crumbs"><a href="#shop">Shop</a> / ${ch ? `<a href="#character-${ch.id}">${esc(ch.name)}</a> / ` : ''}${esc(p.name)}</p>
+  <div class="detail" data-area="detail"><div class="art">${art(p)}</div><div class="stack">${ch ? `<span class="cchip"><i style="--c:${ch.accent}"></i>${esc(ch.name)} by COFOCO</span>` : `<span class="tag">${esc(typeLabel(p.itemType))}</span>`}
+  <h1 style="font-size:clamp(2.4rem,6vw,4rem)">${esc(p.name)}</h1><p class="lede">${esc(p.kind === 'kit' ? p.blurb : E.item(p.sku).category)}</p><div class="row"><span class="price" style="font-size:2.2rem">${inr(p.price)}</span>${stockBadge(av)}</div>
+  ${U.pendingCode ? `<div class="msg info">Referral code ${esc(U.pendingCode)} is applied. <a href="#register" style="text-decoration:underline">Register</a> to credit the person who shared it.</div>` : ''}
+  <div class="row"><button class="btn" data-act="add" data-id="${p.id}" data-area="detail" ${out ? 'disabled' : ''}>${out ? 'Unavailable' : 'Add to bag'}</button>${p.kind === 'kit' ? `<button class="chip" data-act="cmp" data-id="${p.id}" aria-pressed="${U.compare.includes(p.id)}">Compare</button>` : ''}</div>
+  ${p.kind === 'kit' ? `<div class="stack-s"><h4>What is inside</h4><ul class="list-lines">${av.components.map(c => `<li><span>${c.qty > 1 ? c.qty + ' x ' : ''}${esc(c.name)}</span><span class="muted">${c.supports === 0 ? status('Out of stock', 's-bad') : c.supports <= 10 ? status('Low, supports ' + c.supports, 's-warn') : 'Available'}</span></li>`).join('')}</ul>${out && av.limiting ? `<div class="msg bad">Unavailable because ${esc(av.limiting.name)} is out of stock.</div>` : ''}</div>` : ''}${extra}</div></div></div>`;
+}
+function viewCompare() {
+  const kits = E.products().filter(p => p.kind === 'kit'); const sel = U.compare.map(id => E.product(id)).filter(Boolean);
+  const chips = `<div class="row" role="group" aria-label="Choose kits to compare" style="margin-bottom:20px">${kits.map(k => { const ch = char(k.characterId); return `<button class="chip" data-act="cmp" data-id="${k.id}" aria-pressed="${U.compare.includes(k.id)}"><span class="swatch" style="--c:${ch.accent}"></span>${esc(ch.name)}</button>`; }).join('')}</div>`;
+  let body;
+  if (sel.length < 2) body = emptyState('Pick two or three kits', 'Choose kits above to see them side by side.', '<a class="btn btn-o" href="#shop">Browse kits</a>');
+  else body = `<div class="tscroll" data-area="compare"><table><thead><tr><th></th>${sel.map(k => `<th>${esc(k.name)}</th>`).join('')}</tr></thead><tbody>
+  <tr><td class="tt">Character</td>${sel.map(k => { const c = char(k.characterId); return `<td><span class="cchip"><i style="--c:${c.accent}"></i>${esc(c.name)} by COFOCO</span></td>`; }).join('')}</tr>
+  <tr><td class="tt">Mindset</td>${sel.map(k => `<td>${esc(char(k.characterId).mindset)}</td>`).join('')}</tr>
+  <tr><td class="tt">Routine cue</td>${sel.map(k => `<td>${esc(char(k.characterId).cue)}</td>`).join('')}</tr>
+  <tr><td class="tt">Contents</td>${sel.map(k => `<td>${k.bom.map(c => `${c.qty > 1 ? c.qty + ' x ' : ''}${esc(E.item(c.sku).name)}`).join('<br>')}</td>`).join('')}</tr>
+  <tr><td class="tt">Price</td>${sel.map(k => `<td><span class="price">${inr(k.price)}</span></td>`).join('')}</tr>
+  <tr><td class="tt">Availability</td>${sel.map(k => `<td>${stockBadge(E.productAvailability(k.id))}</td>`).join('')}</tr>
+  <tr><td></td>${sel.map(k => `<td><button class="btn btn-sm" data-act="add" data-id="${k.id}" data-area="compare" ${E.productAvailability(k.id).state === 'out' ? 'disabled' : ''}>Add to bag</button></td>`).join('')}</tr></tbody></table></div>`;
+  return `<section class="section wrap" style="border:0"><div class="section-head"><div class="stack-s"><span class="eyebrow">Compare</span><h1 style="font-size:clamp(2.4rem,7vw,4.4rem)">Side by <em>side.</em></h1></div><button class="chip" data-act="clearCmp">Clear comparison</button></div>${chips}${body}</section>`;
+}
+function viewCart() {
+  const lines = U.cart.map(l => ({ l, p: E.product(l.productId) })).filter(x => x.p);
+  if (!lines.length) return `<section class="section wrap" style="border:0">${emptyState('Your bag is empty', 'Add a kit and it will wait for you here.', '<a class="btn" href="#shop">Shop kits</a>')}</section>`;
+  const chk = E.cartCheck(U.cart), total = lines.reduce((a, x) => a + x.p.price * x.l.qty, 0);
+  return `<section class="section wrap" style="border:0" data-area="cart"><div class="section-head"><div class="stack-s"><span class="eyebrow">Bag</span><h1 style="font-size:clamp(2.4rem,7vw,4.2rem)">Your <em>bag.</em></h1></div></div>
+  <div class="cols c21"><div class="stack">${lines.map(({ l, p }) => { const av = E.productAvailability(p.id); return `<div class="card row sb"><div class="stack-s" style="min-width:0"><a href="#${p.id}"><h4>${esc(p.name)}</h4></a><span class="muted">${esc(itemSummary(p))}</span>${l.qty > av.sellable ? status('Only ' + av.sellable + ' available', 's-bad') : ''}</div><div class="row"><div class="qty" role="group" aria-label="Quantity for ${esc(p.name)}"><button data-act="qty" data-id="${p.id}" data-d="-1" aria-label="Decrease">&minus;</button><span>${l.qty}</span><button data-act="qty" data-id="${p.id}" data-d="1" aria-label="Increase">+</button></div><span class="price" style="min-width:90px;text-align:right">${inr(p.price * l.qty)}</span><button class="chip" data-act="remove" data-id="${p.id}">Remove</button></div></div>`; }).join('')}</div>
+  <aside class="panel stack"><h3>Summary</h3><div class="row sb"><span class="muted">Subtotal</span><span class="price">${inr(total)}</span></div><div class="row sb"><span class="muted">Shipping</span><span>Free</span></div>
+  ${U.pendingCode ? `<div class="msg info">Code ${esc(U.pendingCode)} is applied. ${U.userId ? '' : '<a href="#register" style="text-decoration:underline">Register</a> to credit the referrer.'}</div>` : ''}
+  ${!chk.ok ? `<div class="msg bad" role="alert">${chk.shortages.map(s => `${esc(s.name)}: need ${s.need}, only ${s.have} available.`).join('<br>')}<br>Reduce quantities or remove the item.</div>` : ''}
+  ${U.cartError ? `<div class="msg bad" role="alert">${esc(U.cartError)}</div>` : ''}
+  <button class="btn" data-act="startCheckout" ${chk.ok ? '' : 'disabled'}>Reserve and check out</button><p class="muted" style="font-size:12.5px">Checkout reserves every part of every kit together for ${E.state().settings.reservationMinutes} minutes. If one part is short, nothing is reserved.</p></aside></div></section>`;
+}
+function viewCheckout() {
+  E.sweepReservations();
+  const r = U.reservationId ? E.reservation(U.reservationId) : null;
+  if (!r || r.status !== 'active') return `<section class="section wrap" style="border:0">${emptyState('Nothing is reserved', 'Your reservation ended or has not started. Review your bag to reserve again.', '<a class="btn" href="#cart">Back to bag</a>')}</section>`;
+  const lines = r.lines.map(l => ({ l, p: E.product(l.productId) })), total = lines.reduce((a, x) => a + x.p.price * x.l.qty, 0);
+  const user = U.userId ? E.userById(U.userId) : null, f = U.form;
+  const v = k => esc(f[k] != null ? f[k] : (user ? { name: user.name, email: user.email || '', phone: user.phone || '' }[k] : ''));
+  const remaining = Math.max(0, r.expiresAt - E.now());
+  return `<section class="section wrap" style="border:0" data-area="checkout"><div class="section-head"><div class="stack-s"><span class="eyebrow">Checkout</span><h1 style="font-size:clamp(2.4rem,7vw,4.2rem)">Almost <em>there.</em></h1></div><div class="status s-warn" role="timer" aria-live="off">Reserved for <span id="timer">${Math.floor(remaining / 60000)}:${String(Math.floor(remaining / 1000) % 60).padStart(2, '0')}</span></div></div>
+  <div class="cols c21"><form class="stack" data-form="checkout" novalidate><div class="panel stack"><h3>Contact</h3>${user ? `<div class="msg info">Registered as ${esc(user.name)}${user.referral ? '. Referred with ' + esc(user.referral.code) + '.' : '.'}</div>` : U.pendingCode ? `<div class="msg info">Code ${esc(U.pendingCode)} is applied. <a href="#register" style="text-decoration:underline">Register</a> first if you want the referrer credited. Guest checkout earns no referral.</div>` : ''}
+  <div class="fgrid"><label class="f"><span>Name</span><input name="name" id="coName" value="${v('name')}" autocomplete="name" ${U.checkoutError && U.checkoutError.field === 'name' ? 'aria-invalid="true"' : ''}></label><label class="f"><span>Email</span><input name="email" id="coEmail" type="email" value="${v('email')}" autocomplete="email" ${U.checkoutError && U.checkoutError.field === 'email' ? 'aria-invalid="true"' : ''}></label><label class="f"><span>Phone</span><input name="phone" id="coPhone" value="${v('phone')}" autocomplete="tel" inputmode="tel"></label></div></div>
+  <div class="panel stack"><h3>Payment</h3><div class="msg warn">Demo data. No payment provider is connected. Choose what the simulated payment should do.</div>
+  <label class="row"><input type="radio" name="pay" checked style="width:auto"> <span>Prepaid (simulated card or UPI)</span></label><label class="row muted"><input type="radio" name="pay" disabled style="width:auto"> <span>Cash on delivery <span class="tag">Future scope</span></span></label>
+  <label class="f"><span>Simulated result</span><select name="paymentResult"><option value="success" ${f.paymentResult !== 'fail' ? 'selected' : ''}>Payment succeeds</option><option value="fail" ${f.paymentResult === 'fail' ? 'selected' : ''}>Payment is declined</option></select></label></div>
+  ${U.checkoutError ? `<div class="msg bad" role="alert">${esc(U.checkoutError.message)}</div>` : ''}<button class="btn" type="submit">Pay ${inr(total)} and place order</button></form>
+  <aside class="panel stack"><h3>Order</h3><ul class="list-lines">${lines.map(({ l, p }) => `<li><span>${l.qty} x ${esc(p.name)}</span><span>${inr(p.price * l.qty)}</span></li>`).join('')}</ul><div class="row sb"><span class="muted">Total</span><span class="price">${inr(total)}</span></div><a class="muted" href="#cart" data-act="releaseRes">Release reservation and edit bag</a></aside></div></section>`;
+}
+function viewConfirmation() {
+  const o = U.lastOrderId ? E.order(U.lastOrderId) : null;
+  if (!o) return `<section class="section wrap" style="border:0">${emptyState('No recent order', 'Place an order and it will show here.', '<a class="btn" href="#shop">Shop kits</a>')}</section>`;
+  return `<section class="section wrap" style="border:0"><div class="stack" style="max-width:640px"><span class="eyebrow">Order placed</span><h1 style="font-size:clamp(2.4rem,7vw,4.2rem)">Thank <em>you.</em></h1><p class="lede">Order <b style="color:var(--gold-hi)">${esc(o.id)}</b> is confirmed. This is a demo, so no money moved.</p>
+  <div class="panel stack"><ul class="list-lines">${o.lines.map(l => `<li><span>${l.qty} x ${esc(l.name)}</span><span>${inr(l.price * l.qty)}</span></li>`).join('')}</ul><div class="row sb"><span class="muted">Total paid (simulated)</span><span class="price">${inr(o.total)}</span></div></div>
+  ${o.referral ? `<div class="msg good">Referred with ${esc(o.referral.code)}. ${esc(E.influencer(o.referral.influencerId).name)} is credited as set in the program rules.</div>` : ''}<div class="row"><a class="btn" href="#track" data-act="trackThis" data-id="${esc(o.id)}">Track this order</a><a class="btn btn-o" href="#shop">Keep shopping</a></div></div></section>`;
+}
+function viewTrack() {
+  const id = (U.trackId || U.lastOrderId || '').trim(); const o = id ? E.order(id) : null;
+  const flow = ['pending', 'packed', 'shipped', 'delivered'];
+  let body;
+  if (!id) body = emptyState('Enter an order number', 'You can find it on your confirmation page, for example CF-10001.');
+  else if (!o) body = `<div class="msg bad" role="alert">We could not find order ${esc(id)}. Check the number and try again.</div>`;
+  else {
+    const hist = {}; o.history.forEach(h => hist[h.status] = h);
+    const steps = o.status === 'cancelled' ? [...flow.filter(s => hist[s]), 'cancelled'] : flow;
+    body = `<div class="panel stack"><div class="row sb"><h3 style="margin:0">${esc(o.id)}</h3>${orderStatus(o.status)}</div><ol class="timeline">${steps.map(s => `<li class="${hist[s] ? 'done' : ''}"><b>${esc(ORDER_STATUS[s][0])}</b><span class="sub">${hist[s] ? dt(hist[s].at) : 'Not yet'}</span></li>`).join('')}</ol>${o.tracking ? `<div class="msg info">Courier ${esc(o.tracking.carrier)}, tracking ${esc(o.tracking.number)}. <span class="tag">Simulated</span></div>` : ''}<ul class="list-lines">${o.lines.map(l => `<li><span>${l.qty} x ${esc(l.name)}</span><span>${inr(l.price * l.qty)}</span></li>`).join('')}</ul></div>`;
+  }
+  return `<section class="section wrap" style="border:0"><div class="stack" style="max-width:640px"><span class="eyebrow">Order tracking</span><h1 style="font-size:clamp(2.4rem,7vw,4rem)">Where is my <em>order?</em></h1>
+  <form class="row" data-form="track"><label class="sr" for="trackId">Order number</label><input id="trackId" name="id" value="${esc(id)}" placeholder="CF-10001" style="max-width:260px"><button class="btn" type="submit">Track</button></form>${body}</div></section>`;
+}
+function viewRegister() {
+  const f = U.regForm, res = U.regResult, code = f.code != null ? f.code : (U.pendingCode || '');
+  if (res && res.ok) {
+    const u = res.user; return `<section class="section wrap" style="border:0"><div class="stack" style="max-width:600px"><span class="eyebrow">Registered</span><h1 style="font-size:clamp(2.4rem,7vw,4rem)">Welcome, <em>${esc(u.name.split(' ')[0])}.</em></h1>
+    ${res.referral ? `<div class="msg ${res.referral.applied ? 'good' : 'warn'}" role="status">${esc(res.referral.message)}</div>` : '<p class="muted">You registered without a referral code.</p>'}<div class="row"><a class="btn" href="#shop">Shop kits</a><button class="btn btn-o" data-act="regAgain">Register someone else</button></div></div></section>`;
+  }
+  const e = res && !res.ok ? res : null;
+  return `<section class="section wrap" style="border:0"><div class="stack" style="max-width:600px"><span class="eyebrow">Register</span><h1 style="font-size:clamp(2.4rem,7vw,4rem)">Join with a <em>code.</em></h1><p class="lede">Register once. If a friend or instructor shared a code, they are credited for introducing you. A code cannot be changed later.</p>
+  <form class="stack" data-form="register" novalidate data-area="referral"><div class="fgrid"><label class="f"><span>Name</span><input id="rgName" name="name" value="${esc(f.name || '')}" autocomplete="name" ${e && e.field === 'name' ? 'aria-invalid="true"' : ''}></label><label class="f"><span>Email</span><input id="rgEmail" name="email" type="email" value="${esc(f.email || '')}" autocomplete="email" ${e && e.field === 'email' ? 'aria-invalid="true"' : ''}></label><label class="f"><span>Phone</span><input id="rgPhone" name="phone" value="${esc(f.phone || '')}" inputmode="tel" autocomplete="tel" ${e && e.field === 'phone' ? 'aria-invalid="true"' : ''}></label></div>
+  <label class="f"><span>Referral code (optional)</span><input id="rgCode" name="code" value="${esc(code)}" placeholder="ARJUN-RITU10" autocomplete="off" data-live="regcode" ${e && e.field === 'code' ? 'aria-invalid="true"' : ''}></label><div id="regCodeMsg" role="status" aria-live="polite">${codeMsgHtml(code)}</div>
+  ${e ? `<div class="msg bad" role="alert">${esc(e.message)}</div>` : ''}<div class="row"><button class="btn" type="submit">Register</button>${e && e.canContinue ? '<button class="btn btn-o" type="submit" name="skip" value="1">Continue without a code</button>' : ''}</div></form></div></section>`;
+}
+function codeMsgHtml(code) {
+  if (!String(code || '').trim()) return '';
+  const v = E.validateCode(code);
+  return v.ok ? `<div class="msg good">Code ${esc(v.code.code)} is valid. ${esc(v.influencer.name)} will be credited.</div>` : `<div class="msg bad">${esc(v.message)}</div>`;
+}
+function viewAbout() {
+  return `<section class="section wrap" style="border:0"><div class="stack" style="max-width:720px"><span class="eyebrow">About</span><h1 style="font-size:clamp(2.4rem,7vw,4.4rem)">Conscious <em>form.</em></h1>
+  <p class="lede">COFOCO builds training kits around a mindset instead of a product list. Each kit belongs to a character from the Indian epics, treated with respect and checked by our brand team before it is published.</p>
+  <div class="panel stack"><h3>What is simulated in this demo</h3><ul class="list-lines"><li><span>Payment</span><span class="muted">Always simulated</span></li><li><span>Courier tracking numbers</span><span class="muted">Generated</span></li><li><span>Email and phone notifications</span><span class="muted">Not sent</span></li><li><span>Staff and influencer login</span><span class="muted">Role switcher at the top</span></li><li><span>Stock, orders, referrals, commissions, payouts</span><span class="muted">Real logic on seeded data</span></li></ul></div></div></section>`;
+}
+
+/* ---------- Dashboard views ---------- */
+const TABS = {
+  founder: [['overview', 'Overview'], ['inventory', 'Inventory'], ['sales', 'Sales'], ['engagement', 'Engagement'], ['settlements', 'Settlements'], ['orders', 'Orders'], ['influencers', 'Influencers']],
+  staff: [['overview', 'Overview'], ['inventory', 'Inventory'], ['orders', 'Orders'], ['engagement', 'Engagement']]
+};
+function tile(k, v, d, gold) { return `<div class="tile"><span class="k">${k}</span><span class="v ${gold ? 'gold' : ''}">${v}</span>${d ? `<span class="d">${d}</span>` : ''}</div>`; }
+function hbars(rows, fmt) {
+  const max = Math.max(1, ...rows.map(r => r.value));
+  return rows.map(r => `<div class="hbar"><span>${r.label}</span><span class="track"><span class="fill" style="width:${(r.value / max * 100).toFixed(1)}%;display:block;${r.color ? `--c:${r.color}` : ''}"></span></span><span class="num">${fmt(r.value)}</span></div>`).join('');
+}
+function barChart(days) {
+  const W = 640, H = 250, L = 54, B = 30, T = 14, R = 10; const maxV = Math.max(1, ...days.map(d => d.revenue));
+  const step = Math.pow(10, Math.floor(Math.log10(maxV))), nice = Math.ceil(maxV / step) * step; const top = nice * (maxV / nice > 0.8 ? 1 : 1);
+  const ticks = [0, 1, 2, 3, 4].map(i => nice * i / 4), bw = (W - L - R) / days.length;
+  const y = v => T + (H - T - B) * (1 - v / nice);
+  const fmt = v => v >= 100000 ? (v / 100000).toFixed(1).replace('.0', '') + 'L' : v >= 1000 ? (v / 1000).toFixed(0) + 'k' : String(v);
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Net revenue by day for the last 7 days" width="100%"><g class="grid">${ticks.map(t => `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/>`).join('')}</g>
+  ${ticks.map(t => `<text x="${L - 8}" y="${y(t) + 4}" text-anchor="end">${fmt(t)}</text>`).join('')}
+  ${days.map((d, i) => { const x = L + i * bw + bw * 0.18, w = bw * 0.64, yy = y(d.revenue); const last = i === days.length - 1; return `<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(0, H - B - yy).toFixed(1)}" rx="3" fill="${last ? '#e6c981' : '#c9a24f'}"><title>${esc(d.label)}: ${inr(d.revenue)} from ${d.orders} orders</title></rect><text x="${(x + w / 2).toFixed(1)}" y="${H - 10}" text-anchor="middle">${esc(d.label.replace(',', ''))}</text>`; }).join('')}</svg>`;
+}
+function dashShell(tab, content) {
+  const role = U.role === 'staff' ? 'staff' : 'founder';
+  const probs = E.selfCheck();
+  return `<div class="wrap"><div class="dash-head"><div class="stack-s"><span class="eyebrow">${role === 'staff' ? 'Staff' : 'Founder'} dashboard</span><h1 style="font-size:clamp(2rem,5vw,3.2rem)">COFOCO <em>control room</em></h1></div><div class="row"><span class="tag">Demo data</span>${U.role === 'staff' ? '<span class="tag">Staff view</span>' : ''}</div></div>
+  <nav class="tabs" aria-label="Dashboard sections">${TABS[role].map(([id, l]) => `<a href="#founder-${id}" ${tab === id ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>${content}
+  <div class="footer"><p class="row">${probs.length ? status('Data check found ' + probs.length + ' issue(s)', 's-bad') : status('Data check: every screen reads one ledger and all totals agree', 's-good')}</p><p>Every figure here is computed from the stock ledger, orders and commission ledger. Nothing is typed in. Use Reset demo data at the top to return to the seeded week.</p></div></div>`;
+}
+
+function viewOverview() {
+  const o = E.overview(), s = o.sales, alerts = o.alerts;
+  return dashShell('overview', `<div class="tiles">
+  ${tile('Net revenue, 7 days', inr(s.net), `${num(s.orders)} orders after ${s.cancelled} cancelled`, true)}
+  ${tile('Orders placed', num(s.placed), `${num(o.open)} still open`)}
+  ${tile('Conversion', pct(s.conversion), `${num(s.placed)} orders ÷ ${num(s.visitors)} visitors`)}
+  ${tile('Low stock', `${alerts.length}`, `of ${o.itemCount} items at or below reorder point`)}
+  ${tile('Next settlement', o.nextSettlement ? dshort(o.nextSettlement.expected) : '—', o.nextSettlement ? `${inr(o.nextSettlement.net)} · ${o.nextSettlement.status === 'in_transit' ? 'In transit today' : 'Scheduled'}` : 'All settled')}
+  ${tile('Referral revenue', inr(o.referralRevenue), `${num(o.referralOrders)} referred orders`, true)}
+  ${tile('Top influencer', o.topInfluencer ? esc(o.topInfluencer.influencer.name.split(' ')[0]) : '—', o.topInfluencer ? `${inr(o.topInfluencer.revenue)} referred revenue` : 'No referred sales yet')}</div>
+  <div class="cols c21" style="margin-top:16px"><section class="panel"><h3>Leading products</h3>${s.products.length ? hbars(s.products.slice(0, 6).map(p => ({ label: esc(p.name), value: p.revenue })), inr) : emptyState('No sales yet', 'Orders will rank here.')}</section>
+  <section class="panel"><h3>Stock attention</h3><div class="stack-s">${alerts.slice(0, 5).map(a => `<div class="row sb"><span><b class="tt">${esc(a.name)}</b><span class="sub">${esc(a.supplier.name)} · suggest ${a.suggested}</span></span>${status(a.available + ' of ' + a.reorderPoint, a.status === 'out' ? 's-bad' : 's-warn')}</div>`).join('') || '<p class="muted">Nothing needs attention.</p>'}${o.expiry.slice(0, 3).map(x => `<div class="row sb"><span><b class="tt">${esc(x.name)}</b><span class="sub">Batch ${esc(x.batch.lot)}</span></span>${x.expired ? status('Expired, blocked', 's-bad') : status('Expires in ' + x.batch.daysToExpiry + ' days', 's-warn')}</div>`).join('')}<a class="btn btn-o btn-sm" href="#founder-inventory">Open inventory</a></div></section></div>
+  <section class="panel" style="margin-top:16px"><h3>Recent orders</h3>${ordersTable(o.recent, false)}</section>`);
+}
+
+function ordersTable(list, actions) {
+  if (!list.length) return emptyState('No orders match', 'Change the filter to see more.');
+  return `<div class="tscroll"><table><thead><tr><th>Order</th><th>Placed</th><th>Customer</th><th>Items</th><th>Code</th><th class="num">Total</th><th>Status</th>${actions ? '<th>Actions</th>' : ''}</tr></thead><tbody>${list.map(o => {
+    const open = U.ord.open === o.id;
+    return `<tr><td class="tt">${esc(o.id)}</td><td>${dt(o.createdAt)}</td><td>${esc(o.customer.name)}<span class="sub">${o.userId ? 'Registered' : 'Guest'}</span></td><td>${o.lines.map(l => esc(l.qty + ' x ' + l.name)).join('<br>')}</td><td>${o.referral ? `<span class="tag">${esc(o.referral.code)}</span>` : '<span class="muted">—</span>'}</td><td class="num">${inr(o.total)}</td><td>${orderStatus(o.status)}</td>${actions ? `<td><div class="row">${E.nextActions(o).map(a => `<button class="btn btn-sm ${a.danger ? 'btn-danger' : 'btn-o'}" data-act="${a.danger ? 'confirmCancel' : 'orderTo'}" data-id="${o.id}" data-to="${a.to}">${esc(a.label)}</button>`).join('') || '<span class="muted">No further action</span>'}<button class="chip" data-act="orderOpen" data-id="${o.id}" aria-expanded="${open}">History</button></div></td>` : ''}</tr>${open ? `<tr><td colspan="${actions ? 8 : 7}" style="background:var(--surface-2)"><div class="row" style="gap:24px;align-items:start"><ol class="timeline">${o.history.map(h => `<li class="done"><b>${esc(ORDER_STATUS[h.status][0])}</b><span class="sub">${dt(h.at)} by ${esc(h.by)}</span></li>`).join('')}</ol><div class="stack-s"><span class="muted">Payment: ${esc(o.payment.method)} · ${esc(o.payment.status)} · ${esc(o.payment.ref)} <span class="tag">Simulated</span></span>${o.tracking ? `<span class="muted">${esc(o.tracking.carrier)} ${esc(o.tracking.number)} <span class="tag">Simulated</span></span>` : ''}<span class="muted">Source area: ${esc(o.sourceArea)}</span></div></div></td></tr>` : ''}`;
+  }).join('')}</tbody></table></div>`;
+}
+function viewOrders() {
+  const all = E.orders().slice().sort((a, b) => b.createdAt - a.createdAt); const f = U.ord.status;
+  const list = f === 'all' ? all : all.filter(o => o.status === f); const shown = list.slice(0, U.ord.limit || 40);
+  const counts = {}; all.forEach(o => counts[o.status] = (counts[o.status] || 0) + 1);
+  return dashShell('orders', `<div class="row" role="group" aria-label="Filter by status" style="margin-bottom:14px"><button class="chip" data-act="ordFilter" data-id="all" aria-pressed="${f === 'all'}">All ${all.length}</button>${Object.keys(ORDER_STATUS).map(s => `<button class="chip" data-act="ordFilter" data-id="${s}" aria-pressed="${f === s}">${ORDER_STATUS[s][0]} ${counts[s] || 0}</button>`).join('')}</div>
+  <div class="msg info" style="margin-bottom:14px">All orders are prepaid in the demo. Cash on delivery is future scope. Actions depend on each order&rsquo;s status, and cancelling returns stock to its original batch.</div>
+  ${ordersTable(shown, true)}${list.length > shown.length ? `<div class="row" style="justify-content:center;margin-top:14px"><button class="btn btn-o" data-act="ordMore">Show more (${list.length - shown.length} left)</button></div>` : ''}`);
+}
+
+function viewInventory() {
+  const f = U.inv; const res = E.inventoryRows(f), rows = res.rows, tot = res.totals, all = E.valuation(), alerts = E.reorderAlerts(), exp = E.expiryAlerts();
+  const expiringBatches = exp.filter(x => !x.expired).length, expiredUnits = exp.filter(x => x.expired).reduce((a, x) => a + x.batch.onHand, 0);
+  const chipFor = r => r.status === 'out' ? status('Out of stock', 's-bad') : r.status === 'low' ? status('Reorder', 's-warn') : status('OK', 's-good');
+  const sups = E.suppliers(), pos = E.purchaseOrders();
+  return dashShell('inventory', `<div class="tiles">${tile('Items', `${rows.length}<span class="muted" style="font-size:1rem"> of ${res.total}</span>`, 'Showing the filtered set; the table lists the same items')}${tile('Reorder alerts', alerts.length, alerts[0] ? 'Most urgent: ' + esc(alerts.slice().sort((a, b) => b.gap - a.gap)[0].name) : 'None')}${tile('Expiring soon', expiringBatches, `batches within ${E.state().settings.expiryWindowDays} days`)}${tile('Expired, blocked', num(expiredUnits), 'units that cannot be sold')}${tile('Retail stock value', inr(tot.retail), `${num(tot.units)} sellable units`, true)}${tile('Cost value', inr(tot.cost), 'at cost prices')}</div>
+  <div class="panel" style="margin-top:16px"><form class="toolbar" data-form="invfilter"><label class="f"><span>Search name or SKU</span><input id="invSearch" name="search" value="${esc(f.search)}" placeholder="e.g. SU-WH1 or yoga"></label>
+  <label class="f"><span>Type</span><select id="invType" name="type" data-change="invFilter">${['all', 'kit', 'accessory', 'equipment', 'supplement'].filter(t => t !== 'kit').map(t => `<option value="${t}" ${f.type === t ? 'selected' : ''}>${t === 'all' ? 'All types' : typeLabel(t)}</option>`).join('')}</select></label>
+  <label class="f"><span>Status</span><select id="invStatus" name="status" data-change="invFilter">${[['all', 'All'], ['low', 'Reorder or out'], ['expiring', 'Expiring soon'], ['expired', 'Has expired batch'], ['ok', 'OK']].map(([v, l]) => `<option value="${v}" ${f.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+  <label class="f"><span>Sort by</span><select id="invSort" name="sort" data-change="invFilter">${[['name', 'Name'], ['available', 'Available, lowest first'], ['cover', 'Days of cover, lowest first']].map(([v, l]) => `<option value="${v}" ${f.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="btn btn-o btn-sm" type="submit">Search</button></form>
+  ${rows.length ? `<div class="tscroll"><table><thead><tr><th>Item</th><th>Supplier</th><th class="num">On hand</th><th class="num">Reserved</th><th class="num">Available</th><th class="num">Reorder at</th><th class="num">Cover</th><th>Status</th><th>Adjust</th></tr></thead><tbody>${rows.map(r => { const it = r.item, st = r.stock, open = f.open[it.sku]; return `<tr><td><span class="tt">${esc(it.name)}</span><span class="sub">${esc(it.sku)} · ${esc(typeLabel(it.type))} · ${inr(it.price)}</span></td><td>${esc(r.supplier.name)}</td><td class="num">${st.onHand}</td><td class="num">${st.reserved}</td><td class="num"><b>${st.available}</b>${st.expiredQty ? `<span class="sub">${st.expiredQty} expired</span>` : ''}</td><td class="num">${it.rp}</td><td class="num">${r.daysOfCover == null ? '—' : r.daysOfCover.toFixed(1) + ' d'}</td><td>${chipFor(r)}${r.expiringQty ? '<br>' + status('Short-dated', 's-warn') : ''}${r.expiredQty ? '<br>' + status('Expired batch', 's-bad') : ''}</td><td><div class="row"><button class="btn btn-sm btn-o" data-act="adjust" data-sku="${it.sku}" data-d="-5" aria-label="Remove 5 from ${esc(it.name)}">&minus;5</button><button class="btn btn-sm btn-o" data-act="adjust" data-sku="${it.sku}" data-d="5" aria-label="Add 5 to ${esc(it.name)}">+5</button><button class="chip" data-act="batches" data-sku="${it.sku}" aria-expanded="${!!open}">Batches</button></div></td></tr>${open ? `<tr><td colspan="9" style="background:var(--surface-2)">${batchTable(it, st)}</td></tr>` : ''}`; }).join('')}</tbody></table></div>` : emptyState('No items match', 'Clear the search or change a filter.', '<button class="btn btn-o" data-act="invClear">Clear filters</button>')}</div>
+  <div class="cols c11" style="margin-top:16px"><section class="panel"><h3>Valuation by type</h3><div class="tscroll"><table><thead><tr><th>Type</th><th class="num">Items</th><th class="num">Units</th><th class="num">Retail</th><th class="num">Cost</th></tr></thead><tbody>${Object.keys(all.byType).map(t => `<tr><td>${esc(typeLabel(t))}</td><td class="num">${all.byType[t].items}</td><td class="num">${num(all.byType[t].units)}</td><td class="num">${inr(all.byType[t].retail)}</td><td class="num">${inr(all.byType[t].cost)}</td></tr>`).join('')}<tr><td class="tt">All items</td><td class="num">${all.items}</td><td class="num">${num(all.units)}</td><td class="num"><b>${inr(all.retail)}</b></td><td class="num">${inr(all.cost)}</td></tr></tbody></table></div></section>
+  <section class="panel"><h3>Kit availability</h3><p class="muted" style="margin-bottom:10px">Worked out from component stock. The limiting part is named.</p><div class="tscroll"><table><thead><tr><th>Kit</th><th class="num">Sellable</th><th>Limited by</th></tr></thead><tbody>${E.kitAvailability().map(k => `<tr><td>${esc(k.kit.name)}</td><td class="num"><b>${k.sellable}</b></td><td>${k.limiting ? esc(k.limiting.name) : '—'} ${k.state === 'out' ? status('Out', 's-bad') : k.state === 'low' ? status('Low', 's-warn') : ''}</td></tr>`).join('')}</tbody></table></div></section></div>
+  <div class="cols c11" style="margin-top:16px"><section class="panel"><h3>Reorder suggestions</h3>${alerts.length ? `<div class="stack-s">${alerts.map(a => `<div class="row sb"><span><b class="tt">${esc(a.name)}</b><span class="sub">${esc(a.supplier.name)} · lead time ${a.supplier.leadDays} days · gap ${a.gap}</span></span><span class="row">${status(a.available + ' of ' + a.reorderPoint, a.status === 'out' ? 's-bad' : 's-warn')}<span class="muted">Order ${a.suggested}</span></span></div>`).join('')}</div><div class="row" style="margin-top:14px">${[...new Set(alerts.map(a => a.supplier.id))].map(sid => { const sp = sups.find(s => s.id === sid); return `<button class="btn btn-sm btn-o" data-act="poFrom" data-id="${sid}">Create PO for ${esc(sp.name)}</button>`; }).join('')}</div>` : '<p class="muted">No item is at or below its reorder point.</p>'}</section>
+  <section class="panel"><h3>Purchase orders</h3>${pos.length ? `<div class="stack-s">${pos.map(p => { const sp = sups.find(s => s.id === p.supplierId); return `<div class="row sb"><span><b class="tt">${esc(p.id)} · ${esc(sp.name)}</b><span class="sub">${p.lines.map(l => l.qty + ' x ' + esc(E.item(l.sku).name)).join(', ')}</span></span>${p.status === 'ordered' ? `<button class="btn btn-sm" data-act="receivePO" data-id="${p.id}">Mark received</button>` : status('Received ' + dshort(p.receivedAt), 's-good')}</div>`; }).join('')}</div>` : emptyState('No purchase orders', 'Create one from a reorder suggestion.')}</section></div>
+  <section class="panel" style="margin-top:16px"><h3>Suppliers</h3><div class="tscroll"><table><thead><tr><th>Supplier</th><th>Contact</th><th class="num">Lead time</th><th class="num">Items</th><th>Last order</th><th class="num">Open POs</th></tr></thead><tbody>${sups.map(s => `<tr><td class="tt">${esc(s.name)}<span class="sub">${esc(s.city)}</span></td><td>${esc(s.contact)}</td><td class="num">${s.leadDays} d</td><td class="num">${s.items.length}</td><td>${dd(s.lastOrderAt)}</td><td class="num">${s.openPOs}</td></tr>`).join('')}</tbody></table></div></section>`);
+}
+function batchTable(it, st) {
+  return `<table><thead><tr><th>Batch or lot</th><th>Made</th><th>Expiry</th><th class="num">On hand</th><th class="num">Available</th><th>Status</th><th></th></tr></thead><tbody>${st.batches.map(b => `<tr><td>${esc(b.lot)}</td><td>${b.mfg ? dd(b.mfg) : '—'}</td><td>${b.expiry ? dd(b.expiry) : 'No expiry'}</td><td class="num">${b.onHand}</td><td class="num">${b.available}</td><td>${b.expired ? status('Expired, blocked from sale', 's-bad') : b.warning ? status('Expires in ' + b.daysToExpiry + ' days', 's-warn') : status('OK', 's-good')}</td><td>${b.expired && b.onHand > 0 ? `<button class="btn btn-sm btn-danger" data-act="writeoff" data-id="${b.id}">Write off ${b.onHand}</button>` : ''}</td></tr>`).join('')}</tbody></table><p class="muted" style="margin-top:8px;font-size:12.5px">Dispatch takes the earliest expiry first. Stock ledger entries for this item: ${E.state().ledger.filter(e => e.sku === it.sku).length}.</p>`;
+}
+
+function viewSales() {
+  const src = U.sales.source, s = E.salesReport({ source: src }), opts = E.sourceOptions();
+  return dashShell('sales', `<div class="toolbar"><label class="f"><span>Referral source</span><select id="salesSrc" data-change="salesSource">${opts.map(o => `<option value="${o.id}" ${src === o.id ? 'selected' : ''}>${esc(o.label)}</option>`).join('')}</select></label></div>
+  <div class="tiles">${tile('Net sales', inr(s.net), 'Cancelled orders excluded', true)}${tile('Orders', num(s.orders), `${s.placed} placed, ${s.cancelled} cancelled`)}${tile('Average order', s.aov == null ? '—' : inr(s.aov), 'Net sales ÷ orders')}${tile('Conversion', pct(s.conversion), s.visitors != null ? `${num(s.placed)} orders ÷ ${num(s.visitors)} visitors` : 'Visitors are not split by source')}</div>
+  <section class="panel" style="margin-top:16px"><h3>Net revenue by day</h3>${s.orders ? barChart(s.days) : emptyState('No sales for this source', 'Pick another source.', '<button class="btn btn-o" data-act="salesAll">Show all sources</button>')}</section>
+  <div class="cols c11" style="margin-top:16px"><section class="panel"><h3>Product ranking</h3>${s.products.length ? `<div class="tscroll"><table><thead><tr><th>Product</th><th class="num">Units</th><th class="num">Revenue</th></tr></thead><tbody>${s.products.slice(0, 10).map(p => `<tr><td>${esc(p.name)}</td><td class="num">${p.units}</td><td class="num">${inr(p.revenue)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="muted">Nothing sold.</p>'}</section>
+  <section class="panel"><h3>Character performance</h3>${s.characters.length ? hbars(s.characters.map(c => ({ label: `${esc(c.name)}`, value: c.revenue, color: c.id === 'essentials' ? '#a89f8d' : char(c.id).accent })), inr) : '<p class="muted">Nothing sold.</p>'}<p class="muted" style="font-size:12.5px;margin-top:10px">Essentials are single items bought outside a kit.</p></section></div>`);
+}
+
+function viewEngagement() {
+  const g = E.engagement(), max = Math.max(...g.interactions.map(i => i.count));
+  const zones = [['Navigation', 0.04], ['Hero', 0.2], ['Picker', 0.36], ['Cards', 0.6], ['Detail', 0.72], ['Checkout', 0.9]];
+  return dashShell('engagement', `<div class="tiles">${tile('Visitors', num(g.visitors), 'Sessions in the seeded week plus this browser')}${tile('Orders placed', num(g.totalOrders))}${tile('Conversion', pct(g.conversion), `${num(g.totalOrders)} orders ÷ ${num(g.visitors)} visitors`, true)}</div>
+  <div class="cols c11" style="margin-top:16px"><section class="panel"><h3>Touch map</h3><div class="phone" role="img" aria-label="Heat map of taps on a phone-sized storefront"><svg viewBox="0 0 100 200" preserveAspectRatio="none" aria-hidden="true">${zones.map(z => `<line x1="0" x2="100" y1="${z[1] * 200 - 2}" y2="${z[1] * 200 - 2}" stroke="rgba(214,176,98,.1)" stroke-width=".3"/><text x="3" y="${z[1] * 200 - 3.5}" fill="#6f675a" font-size="3.4" font-family="monospace">${z[0].toUpperCase()}</text>`).join('')}${g.touchPoints.map(p => `<circle cx="${(p.x * 100).toFixed(1)}" cy="${(p.y * 200).toFixed(1)}" r="2.2" fill="#e6c981" opacity=".13"/>`).join('')}</svg></div><p class="muted" style="font-size:12.5px;margin-top:12px">Brighter spots are where more taps landed. Interactions are stored in this browser only. Nothing is sent anywhere.</p></section>
+  <section class="panel"><h3>Interactions by storefront area</h3>${hbars(g.interactions.map(i => ({ label: esc(i.label), value: i.count })), num)}</section></div>
+  <section class="panel" style="margin-top:16px"><h3>Conversion by area</h3><div class="tscroll"><table><thead><tr><th>Entry area</th><th class="num">Sessions</th><th class="num">Orders</th><th class="num">Conversion</th></tr></thead><tbody>${g.byArea.map(a => `<tr><td>${esc(a.label)}</td><td class="num">${num(a.sessions)}</td><td class="num">${num(a.orders)}</td><td class="num"><b>${pct(a.conversion)}</b></td></tr>`).join('')}<tr><td class="tt">All areas</td><td class="num">${num(g.byArea.reduce((a, x) => a + x.sessions, 0))}</td><td class="num">${num(g.byArea.reduce((a, x) => a + x.orders, 0))}</td><td class="num"><b>${pct(g.conversion)}</b></td></tr></tbody></table></div></section>`);
+}
+
+function viewSettlements() {
+  const s = E.settlements(), stat = { settled: ['Settled', 's-good'], in_transit: ['In transit', 's-info'], scheduled: ['Scheduled', 's-mute'] };
+  return dashShell('settlements', `<div class="msg warn" style="margin-bottom:14px">Demo data. These are simulated gateway settlements: each day&rsquo;s paid orders settle two days later, less a 2% fee. Influencer payments are under Influencers, as Partner payouts.</div>
+  ${s.length ? `<div class="tscroll"><table><thead><tr><th>Settlement</th><th>Orders from</th><th class="num">Orders</th><th class="num">Gross</th><th class="num">Fee 2%</th><th class="num">Net to bank</th><th>Expected</th><th>Status</th></tr></thead><tbody>${s.map(x => `<tr><td class="tt">${esc(x.id)}</td><td>${dshort(x.orderDay)}</td><td class="num">${x.orders}</td><td class="num">${inr(x.gross)}</td><td class="num">${inr2(x.fee)}</td><td class="num"><b>${inr2(x.net)}</b></td><td>${dd(x.expected)}</td><td>${status(stat[x.status][0], stat[x.status][1])}</td></tr>`).join('')}</tbody></table></div>` : emptyState('No settlements yet', 'Paid orders create settlements.')}`);
+}
+
+function infRange() { const n = E.now(), r = U.inf.range; return r === '24h' ? { from: n - 86400000 } : r === '3d' ? { from: n - 3 * 86400000 } : r === '7d' ? { from: n - 7 * 86400000 } : {}; }
+function viewInfluencers() {
+  const range = infRange(), st = E.influencerStats(range), t = st.totals, S = E.state().settings, q = E.payoutQueue();
+  const board = U.inf.board, rows = st.rows.slice().sort((a, b) => board === 'revenue' ? b.revenue - a.revenue : b.signups - a.signups);
+  const sel = U.inf.sel && E.influencer(U.inf.sel) ? E.influencerDetail(U.inf.sel, range) : null;
+  const stChip = s => s === 'active' ? status('Active', 's-good') : s === 'paused' ? status('Paused', 's-warn') : status('Ended', 's-mute');
+  return dashShell('influencers', `<div class="toolbar"><label class="f"><span>Date range</span><select id="infRange" data-change="infRange">${[['all', 'All time'], ['24h', 'Last 24 hours'], ['3d', 'Last 3 days'], ['7d', 'Last 7 days']].map(([v, l]) => `<option value="${v}" ${U.inf.range === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><button class="btn btn-o btn-sm" data-act="copyCsv">Copy aggregate CSV</button></div>
+  <div class="tiles">${tile('Active influencers', t.active, `of ${st.rows.length} in total`)}${tile('Total signups', num(t.signups), `${num(t.clicks)} link clicks`)}${tile('Referred orders', num(t.orders))}${tile('Referred revenue', inr(t.revenue), 'Net of cancelled orders', true)}${tile('Commission earned', inr2(t.earned), 'Non-reversed entries', true)}${tile('Pending', inr2(t.pending), `${inr2(t.approved)} approved, waiting for payout`)}${tile('Paid', inr2(t.paid))}</div>
+  <div class="cols c21" style="margin-top:16px"><section class="panel"><div class="row sb"><h3 style="margin:0">Leaderboard</h3><div class="row" role="group" aria-label="Rank by"><button class="chip" data-act="board" data-id="signups" aria-pressed="${board === 'signups'}">Signups</button><button class="chip" data-act="board" data-id="revenue" aria-pressed="${board === 'revenue'}">Referred revenue</button></div></div><div style="margin-top:12px">${rows.some(r => (board === 'revenue' ? r.revenue : r.signups) > 0) ? hbars(rows.map(r => ({ label: esc(r.influencer.name), value: board === 'revenue' ? r.revenue : r.signups })), board === 'revenue' ? inr : num) : emptyState('No activity in this range', 'Try a wider date range.')}</div></section>
+  <section class="panel stack"><h3>Program rules</h3><div class="stack-s"><span class="kv"><span class="k">Commission trigger</span></span>
+  <div class="row" role="group" aria-label="Commission trigger"><button class="chip" data-act="trigger" data-id="signup" aria-pressed="${S.commissionTrigger === 'signup'}">On registration</button><button class="chip" data-act="trigger" data-id="first_order" aria-pressed="${S.commissionTrigger === 'first_order'}">On first paid order</button></div><p class="muted" style="font-size:12.5px">${S.commissionTrigger === 'signup' ? 'Paying on registration alone is easy to game. Duplicates and self-referrals are blocked either way.' : 'Registration earns nothing. The first paid order earns the fixed amount, once.'}</p></div>
+  <form class="row" data-form="defaultrule" style="align-items:end"><label class="f"><span>Default fixed</span><input id="ruleFixed" name="fixed" type="number" min="0" step="1" value="${S.defaultCommission.fixed}" style="width:110px"></label><label class="f"><span>Default % of orders</span><input id="rulePct" name="percent" type="number" min="0" max="100" step="0.5" value="${S.defaultCommission.percent}" style="width:130px"></label><button class="btn btn-sm btn-o" type="submit">Save</button></form>${U.settingsMsg ? `<div class="msg ${U.settingsMsg.ok ? 'good' : 'bad'}" role="status">${esc(U.settingsMsg.text)}</div>` : ''}</section></div>
+  <section class="panel" style="margin-top:16px"><h3>Influencers</h3><div class="tscroll"><table><thead><tr><th>Name</th><th>Type</th><th>Code</th><th class="num">Clicks</th><th class="num">Signups</th><th class="num">Signup conv.</th><th class="num">First-order conv.</th><th class="num">Referred revenue</th><th class="num">Earned</th><th class="num">Pending</th><th class="num">Paid</th><th>Status</th><th></th></tr></thead><tbody>${rows.map(r => `<tr><td class="tt">${esc(r.influencer.name)}<span class="sub">${esc(r.influencer.handle)}</span></td><td>${esc(infTypeLabel(r.influencer.type))}</td><td>${r.codes.map(c => `<span class="tag" style="${c.status !== 'active' || (c.expiresAt && c.expiresAt <= E.now()) ? 'opacity:.55' : ''}">${esc(c.code)}</span>`).join(' ')}</td><td class="num">${num(r.clicks)}</td><td class="num">${num(r.signups)}</td><td class="num">${pct1(r.signupConversion)}</td><td class="num">${pct1(r.orderConversion)}</td><td class="num">${inr(r.revenue)}</td><td class="num">${inr2(r.earned)}</td><td class="num">${inr2(r.pending)}</td><td class="num">${inr2(r.paid)}</td><td>${stChip(r.influencer.status)}</td><td><button class="btn btn-sm btn-o" data-act="infOpen" data-id="${r.influencer.id}">Open</button></td></tr>`).join('')}</tbody></table></div><p class="muted" style="font-size:12.5px;margin-top:10px">Signup conversion is signups ÷ clicks. First-order conversion is referred users with a paid order ÷ signups. A dash means the denominator is zero.</p></section>
+  ${sel ? influencerDetailPanel(sel, stChip) : ''}
+  <div class="cols c11" style="margin-top:16px"><section class="panel"><h3>Payout queue</h3>${q.length ? `<div class="tscroll"><table><thead><tr><th>Person</th><th class="num">Entries</th><th class="num">Approved amount</th><th></th></tr></thead><tbody>${q.map(x => `<tr><td class="tt">${esc(x.influencer.name)}</td><td class="num">${x.entries.length}</td><td class="num"><b>${inr2(x.amount)}</b></td><td><button class="btn btn-sm" data-act="payout" data-id="${x.influencer.id}">Record payout</button></td></tr>`).join('')}</tbody></table></div>` : emptyState('Nothing waiting for payout', 'Approve pending entries to queue them here.')}</section>
+  <section class="panel stack"><h3>Create influencer and code</h3><form class="stack" data-form="newinf" novalidate><div class="fgrid"><label class="f"><span>Name</span><input id="niName" name="name" autocomplete="off"></label><label class="f"><span>Type</span><select id="niType" name="type"><option value="instructor">Instructor</option><option value="social">Social media</option><option value="other">Other</option></select></label><label class="f"><span>Handle</span><input id="niHandle" name="handle" placeholder="@name"></label><label class="f"><span>Email</span><input id="niEmail" name="email" type="email"></label><label class="f"><span>Phone</span><input id="niPhone" name="phone" inputmode="tel"></label></div>
+  <label class="f"><span>Referral code</span><input id="niCode" name="code" placeholder="ARJUN-RITU10" autocomplete="off" data-live="newcode"></label><div id="newCodeMsg" role="status" aria-live="polite"></div>
+  <div class="fgrid"><label class="f"><span>Fixed per signup (blank = default)</span><input id="niFixed" name="fixed" type="number" min="0" step="1"></label><label class="f"><span>% of referred orders (blank = default)</span><input id="niPct" name="percent" type="number" min="0" max="100" step="0.5"></label></div>
+  ${U.inf.createMsg ? `<div class="msg ${U.inf.createMsg.ok ? 'good' : 'bad'}" role="alert">${esc(U.inf.createMsg.text)}</div>` : ''}<button class="btn" type="submit">Create influencer</button></form></section></div>`);
+}
+function influencerDetailPanel(d, stChip) {
+  const inf = d.influencer, s = d.stats;
+  return `<section class="panel stack" style="margin-top:16px" id="infDetail"><div class="row sb"><div><h3 style="margin:0">${esc(inf.name)} ${stChip(inf.status)}</h3><span class="muted">${esc(infTypeLabel(inf.type))} · ${esc(inf.handle || 'no handle')} · ${esc(inf.email || 'no email')}${inf.phone ? ' · ' + esc(inf.phone) : ''}</span></div><div class="row">${inf.status === 'active' ? `<button class="btn btn-sm btn-o" data-act="infStatus" data-id="${inf.id}" data-s="paused">Pause</button>` : `<button class="btn btn-sm btn-o" data-act="infStatus" data-id="${inf.id}" data-s="active">Resume</button>`}${inf.status !== 'ended' ? `<button class="btn btn-sm btn-danger" data-act="infStatus" data-id="${inf.id}" data-s="ended">End</button>` : ''}<button class="chip" data-act="infClose">Close</button></div></div>
+  <div class="tiles">${tile('Signups', s.signups)}${tile('Referred revenue', inr(s.revenue))}${tile('Earned', inr2(s.earned), '', true)}${tile('Pending', inr2(s.pending))}${tile('Approved', inr2(s.approved))}${tile('Paid', inr2(s.paid))}</div>
+  <div><h4 style="margin-bottom:8px">Codes and links</h4><div class="stack-s">${d.codes.map(c => { const exp = c.expiresAt && c.expiresAt <= E.now(); return `<div class="row sb"><span><b class="tt">${esc(c.code)}</b> ${exp ? status('Expired', 's-bad') : c.status === 'active' ? status('Active', 's-good') : status('Paused', 's-warn')}<span class="sub">${esc(E.linkFor(c.code))}${c.expiresAt ? ' · expires ' + dd(c.expiresAt) : ''}</span></span><span class="row"><button class="btn btn-sm btn-o" data-act="visitLink" data-code="${esc(c.code)}">Simulate link visit</button>${!exp ? `<button class="btn btn-sm btn-o" data-act="codeStatus" data-id="${c.id}" data-s="${c.status === 'active' ? 'paused' : 'active'}">${c.status === 'active' ? 'Pause code' : 'Resume code'}</button>` : ''}</span></div>`; }).join('')}<button class="btn btn-sm btn-o" style="justify-self:start" data-act="newCode" data-id="${inf.id}">Add a code</button></div></div>
+  <div><h4 style="margin-bottom:8px">Commission ledger</h4>${d.entries.length ? `<div class="tscroll"><table><thead><tr><th>When</th><th>Referred user</th><th>Trigger</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>${d.entries.slice(0, 40).map(e => { const u = E.userById(e.userId); return `<tr><td>${dt(e.createdAt)}</td><td>${u ? esc(u.name) : '—'}${e.orderId ? `<span class="sub">${esc(e.orderId)}</span>` : ''}</td><td>${esc({ signup: 'Registration', first_order: 'First paid order', order_pct: 'Share of order' }[e.kind])}</td><td class="num">${inr2(e.amount)}</td><td>${entryStatus(e.status)}${e.reason ? `<span class="sub">${esc(e.reason)}</span>` : ''}${e.flag ? `<span class="sub">${esc(e.flag)}</span>` : ''}</td><td><div class="row">${e.status === 'pending' ? `<button class="btn btn-sm btn-o" data-act="approve" data-id="${e.id}">Approve</button>` : ''}${e.status === 'pending' || e.status === 'approved' ? `<button class="btn btn-sm btn-danger" data-act="reverse" data-id="${e.id}">Reverse</button>` : ''}</div></td></tr>`; }).join('')}</tbody></table></div>${d.entries.some(e => e.status === 'pending') ? `<div style="margin-top:10px"><button class="btn btn-sm" data-act="approveAll" data-id="${inf.id}">Approve all pending</button></div>` : ''}${d.entries.length > 40 ? `<p class="muted" style="margin-top:8px;font-size:12.5px">Showing the latest 40 of ${d.entries.length} entries. Totals above include all of them.</p>` : ''}` : emptyState('No ledger entries', 'Entries appear when someone registers with a code in this date range.')}</div>
+  <div class="cols c11"><div><h4 style="margin-bottom:8px">Signups and orders</h4><ul class="list-lines">${d.users.slice(0, 8).map(u => `<li><span>${esc(u.name)}<span class="sub">${esc(u.email || u.phone || '')}</span></span><span class="muted">${dt(u.createdAt)}</span></li>`).join('') || '<li class="muted">No signups in this range</li>'}</ul><span class="muted" style="font-size:12.5px">${d.orders.length} orders by referred users in this range</span></div>
+  <div><h4 style="margin-bottom:8px">Payout history</h4><ul class="list-lines">${d.payouts.map(p => `<li><span>${esc(p.id)} · ${esc(p.reference || 'draft')}<span class="sub">${p.paidAt ? dd(p.paidAt) : 'Not paid'} · ${p.entryIds.length} entries</span></span><b>${inr2(p.amount)}</b></li>`).join('') || '<li class="muted">No payouts yet</li>'}</ul></div></div></section>`;
+}
+
+function viewInfluencerPortal() {
+  const inf = U.infId ? E.influencer(U.infId) : null;
+  if (!inf) return `<section class="section wrap" style="border:0">${emptyState('Choose an influencer', 'Use View as at the top to pick a demo influencer.')}</section>`;
+  const d = E.influencerDetail(inf.id, {}), s = d.stats;
+  return `<div class="wrap"><div class="dash-head"><div class="stack-s"><span class="eyebrow">Influencer view · read only</span><h1 style="font-size:clamp(2rem,5vw,3.2rem)">Hello, <em>${esc(inf.name.split(' ')[0])}.</em></h1></div><span class="tag">Demo access, no login</span></div>
+  <div class="tiles" style="margin-top:18px">${tile('Signups', s.signups, `${num(s.clicks)} link clicks`)}${tile('Earned', inr2(s.earned), 'Same figure the owner sees', true)}${tile('Pending', inr2(s.pending))}${tile('Approved', inr2(s.approved), 'Waiting for payout')}${tile('Paid', inr2(s.paid))}</div>
+  <section class="panel stack" style="margin-top:16px"><h3>Your codes and links</h3>${d.codes.map(c => { const exp = c.expiresAt && c.expiresAt <= E.now(); return `<div class="row sb"><span><b class="tt">${esc(c.code)}</b> ${exp ? status('Expired', 's-bad') : c.status === 'active' ? status('Active', 's-good') : status('Paused', 's-warn')}<span class="sub">${esc(E.linkFor(c.code))}</span></span><button class="btn btn-sm btn-o" data-act="copyText" data-text="${esc(E.linkFor(c.code))}">Copy link</button></div>`; }).join('')}</section>
+  <div class="cols c11" style="margin-top:16px"><section class="panel"><h3>Your ledger</h3>${d.entries.length ? `<div class="tscroll"><table><thead><tr><th>When</th><th>For</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>${d.entries.slice(0, 25).map(e => `<tr><td>${dt(e.createdAt)}</td><td>${esc({ signup: 'Registration', first_order: 'First paid order', order_pct: 'Share of order' }[e.kind])}</td><td class="num">${inr2(e.amount)}</td><td>${entryStatus(e.status)}</td></tr>`).join('')}</tbody></table></div>` : emptyState('No earnings yet', 'Share your link to start earning.')}</section>
+  <section class="panel"><h3>Payout history</h3><ul class="list-lines">${d.payouts.map(p => `<li><span>${esc(p.id)}<span class="sub">${esc(p.reference || 'draft')} · ${p.paidAt ? dd(p.paidAt) : 'not paid'}</span></span><b>${inr2(p.amount)}</b></li>`).join('') || '<li class="muted">No payouts yet</li>'}</ul><h3 style="margin:18px 0 10px">Your signups</h3><ul class="list-lines">${d.users.slice(0, 8).map(u => `<li><span>${esc(u.name.split(' ')[0])} ${esc((u.name.split(' ')[1] || '').charAt(0))}.</span><span class="muted">${dt(u.createdAt)}</span></li>`).join('') || '<li class="muted">No signups yet</li>'}</ul></section></div></div>`;
+}
+
+/* ---------- Modals ---------- */
+function modalHtml() {
+  const m = U.modal; if (!m) return '';
+  const wrap = (title, body) => `<div class="overlay" data-act="closeModal" data-overlay="1"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="row sb"><h3 id="mTitle">${esc(title)}</h3><button class="chip" data-act="closeModal" aria-label="Close dialog">Close</button></div>${body}</div></div>`;
+  const msg = m.error ? `<div class="msg bad" role="alert">${esc(m.error)}</div>` : '';
+  if (m.type === 'reset') return wrap('Reset demo data?', `<p class="muted">Every order, stock change, signup, commission and payout you made returns to the seeded week. This cannot be undone.</p><div class="row"><button class="btn" data-act="doReset">Reset now</button><button class="btn btn-o" data-act="closeModal">Keep my changes</button></div>`);
+  if (m.type === 'confirm') return wrap(m.title, `<p class="muted">${esc(m.text)}</p><div class="row"><button class="btn btn-danger" data-act="${m.act}" data-id="${esc(m.id)}" data-to="${esc(m.to || '')}">${esc(m.confirm)}</button><button class="btn btn-o" data-act="closeModal">Go back</button></div>`);
+  if (m.type === 'adjust') { const it = E.item(m.sku), st = E.itemStock(m.sku); return wrap('Adjust ' + it.name, `<form class="stack" data-form="adjust" novalidate><label class="f"><span>Batch</span><select id="adjBatch" name="batchId">${st.batches.map(b => `<option value="${b.id}" ${m.batchId === b.id ? 'selected' : ''}>${esc(b.lot)} · ${b.onHand} on hand${b.expired ? ' · expired' : ''}</option>`).join('')}</select></label>
+  <label class="f"><span>Change (steps of 5)</span><input id="adjDelta" name="delta" type="number" step="5" value="${m.delta}"></label><label class="f"><span>Reason (required)</span><select id="adjReason" name="reason"><option value="">Choose a reason</option>${E.catalog.adjustReasons.map(r => `<option ${m.reason === r ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></label><label class="f"><span>Note (optional)</span><input id="adjNote" name="note"></label>${msg}<div class="row"><button class="btn" type="submit">Save adjustment</button><button class="btn btn-o" type="button" data-act="closeModal">Cancel</button></div></form>`); }
+  if (m.type === 'reverse') return wrap('Reverse this entry', `<form class="stack" data-form="reverse" novalidate><p class="muted">The original line stays in the ledger and is marked reversed. Earned and pending totals fall.</p><label class="f"><span>Reason (required)</span><input id="revReason" name="reason" placeholder="e.g. Fake signup, order cancelled"></label>${msg}<div class="row"><button class="btn btn-danger" type="submit">Reverse entry</button><button class="btn btn-o" type="button" data-act="closeModal">Cancel</button></div></form>`);
+  if (m.type === 'payout') { const q = E.payoutQueue().find(x => x.influencer.id === m.id); const inf = E.influencer(m.id); const today = new Date().toISOString().slice(0, 10);
+    if (!q) return wrap('Record payout', `<p class="muted">Nothing is waiting for payout for ${esc(inf.name)}. It may already be recorded.</p><button class="btn btn-o" data-act="closeModal">Close</button>`);
+    return wrap('Record payout for ' + inf.name, `<form class="stack" data-form="payout" novalidate><div class="row sb"><span class="muted">${q.entries.length} approved entries</span><span class="price">${inr2(q.amount)}</span></div><label class="f"><span>Bank or UPI reference (required)</span><input id="payRef" name="reference" placeholder="e.g. NEFT-2611-001"></label><label class="f"><span>Paid on</span><input id="payDate" name="date" type="date" value="${today}"></label><p class="muted" style="font-size:12.5px">Entries become paid. Recording the same payout again changes nothing.</p>${msg}<div class="row"><button class="btn" type="submit">Mark as paid</button><button class="btn btn-o" type="button" data-act="closeModal">Cancel</button></div></form>`); }
+  if (m.type === 'receivePO') { const po = E.purchaseOrders().find(p => p.id === m.id);
+    return wrap('Receive ' + po.id, `<form class="stack" data-form="receivePO" novalidate>${po.lines.map(l => { const it = E.item(l.sku), sup = it.type === 'supplement'; return `<div class="card stack-s"><b class="tt">${l.qty} x ${esc(it.name)}</b>${sup ? `<div class="fgrid"><label class="f"><span>Batch or lot (required)</span><input name="lot_${l.sku}" id="lot_${l.sku}"></label><label class="f"><span>Made on</span><input name="mfg_${l.sku}" type="date"></label><label class="f"><span>Expiry (required)</span><input name="exp_${l.sku}" type="date" id="exp_${l.sku}"></label></div>` : '<span class="muted">No batch data needed. Stock increases through the ledger.</span>'}</div>`; }).join('')}${msg}<div class="row"><button class="btn" type="submit">Receive stock</button><button class="btn btn-o" type="button" data-act="closeModal">Cancel</button></div></form>`); }
+  if (m.type === 'newCode') return wrap('Add a code', `<form class="stack" data-form="newCodeFor" novalidate><label class="f"><span>New code</span><input id="ncCode" name="code" placeholder="NAME-OFFER10" autocomplete="off" data-live="modalcode"></label><div id="modalCodeMsg" role="status" aria-live="polite"></div>${msg}<div class="row"><button class="btn" type="submit">Add code</button><button class="btn btn-o" type="button" data-act="closeModal">Cancel</button></div></form>`);
+  return '';
+}
+
+/* ---------- Router, events, boot ---------- */
+function parseRoute() {
+  const h = (location.hash || '#home').slice(1) || 'home';
+  if (h.startsWith('kit-') || h.startsWith('item-')) return { name: 'product', id: h };
+  if (h.startsWith('character-')) return { name: 'character', id: h.slice(10) };
+  if (h.startsWith('founder-')) return { name: 'founder', tab: h.slice(8) };
+  if (h.startsWith('join-')) return { name: 'join', code: h.slice(5) };
+  return { name: h };
+}
+function gate(r, roles) {
+  return `<section class="section wrap" style="border:0">${emptyState('This view is for the ' + roles + ' role', 'Use View as at the top of the page to switch roles in the demo.', '<button class="btn" data-act="toFounder" data-tab="overview">Switch to Founder</button>')}</section>`;
+}
+function viewFor(r) {
+  switch (r.name) {
+    case 'home': return viewHome();
+    case 'shop': return viewShop();
+    case 'characters': return viewCharacters();
+    case 'character': return viewCharacter(r.id);
+    case 'product': return viewProduct(r.id);
+    case 'compare': return viewCompare();
+    case 'cart': return viewCart();
+    case 'checkout': return viewCheckout();
+    case 'confirmation': return viewConfirmation();
+    case 'track': return viewTrack();
+    case 'register': return viewRegister();
+    case 'about': return viewAbout();
+    case 'portal': return U.role === 'influencer' ? viewInfluencerPortal() : gate(r, 'Influencer');
+    case 'founder': {
+      if (U.role !== 'founder' && U.role !== 'staff') return gate(r, 'Founder or Staff');
+      const allowed = TABS[U.role === 'staff' ? 'staff' : 'founder'].map(t => t[0]);
+      if (!allowed.includes(r.tab)) return `<section class="section wrap" style="border:0">${emptyState('Founder only', 'Sales, settlements and influencers are visible to the Founder role. Switch role at the top.', '<a class="btn btn-o" href="#founder-overview">Back to overview</a>')}</section>`;
+      return ({ overview: viewOverview, inventory: viewInventory, sales: viewSales, engagement: viewEngagement, settlements: viewSettlements, orders: viewOrders, influencers: viewInfluencers })[r.tab]();
+    }
+    default: return emptyState('Page not found', 'That address does not exist.', '<a class="btn" href="#home">Go home</a>');
+  }
+}
+let current = null;
+function render(keepScroll) {
+  const r = parseRoute(); current = r;
+  if (r.name === 'join') { const v = E.recordLinkVisit(r.code); if (v.ok) { U.pendingCode = v.code.code; U.regForm = Object.assign({}, U.regForm, { code: v.code.code }); } else { U.regForm = Object.assign({}, U.regForm, { code: r.code }); } U.regResult = null; save(); location.replace('#register'); return; }
+  const y = window.scrollY;
+  document.getElementById('demo').innerHTML = demoBar();
+  document.getElementById('nav').innerHTML = navHtml(r);
+  document.getElementById('app').innerHTML = viewFor(r);
+  document.getElementById('foot').innerHTML = r.name === 'founder' || r.name === 'portal' ? '' : footerHtml();
+  renderModal(); if (keepScroll) window.scrollTo(0, y);
+  const t = document.querySelector('h1'); document.title = 'COFOCO';
+}
+function renderModal() { document.getElementById('modal').innerHTML = modalHtml(); const f = document.querySelector('#modal input:not([type=hidden]), #modal select, #modal .btn'); if (U.modal && f && !U._focused) { f.focus(); U._focused = true; } if (!U.modal) U._focused = false; }
+let toastT;
+function toast(msg, bad) { const el = document.getElementById('toast'); el.innerHTML = `<div class="toast ${bad ? 'bad' : ''}" role="status">${esc(msg)}</div>`; clearTimeout(toastT); toastT = setTimeout(() => { el.innerHTML = ''; }, 3200); }
+function go(h) { if (location.hash === h) render(); else location.hash = h; }
+function refresh() { save(); render(true); }
+function openModal(m) { U.modal = m; U._focused = false; renderModal(); }
+function closeModal() { U.modal = null; renderModal(); }
+const fd = form => Object.fromEntries(new FormData(form).entries());
+function track(el, ev) {
+  const a = el.closest('[data-area]'); if (!a) return;
+  const h = Math.max(document.documentElement.scrollHeight, 1);
+  E.track(a.dataset.area, ev.clientX / Math.max(window.innerWidth, 1), (window.scrollY + ev.clientY) / h);
+}
+function copyText(text, okMsg) {
+  const fallback = () => { openModal({ type: 'copy', text }); };
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(() => toast(okMsg || 'Copied'), fallback); } else fallback(); } catch (e) { fallback(); }
+}
+const toMs = (v, noon) => v ? new Date(v + (noon ? 'T12:00:00' : 'T00:00:00')).getTime() : null;
+
+const ACT = {
+  role(v) { if (v === 'shopper') { U.role = 'shopper'; go('#home'); } else if (v === 'founder' || v === 'staff') { U.role = v; go('#founder-overview'); } else if (v.startsWith('influencer:')) { U.role = 'influencer'; U.infId = v.split(':')[1]; go('#portal'); } save(); render(); },
+  toFounder(el) { if (U.role === 'shopper' || U.role === 'influencer') U.role = 'founder'; go('#founder-' + (el.dataset.tab || 'overview')); save(); },
+  scrollTo(el) { U.entry = el.dataset.entry || U.entry; const t = document.getElementById(el.dataset.target); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+  entry(el) { U.entry = el.dataset.entry || 'shop'; },
+  pick(el) { U.pickerChar = el.dataset.id; render(true); },
+  openReset() { openModal({ type: 'reset' }); },
+  closeModal(el, ev) { if (el.dataset.overlay && ev.target !== el) return; closeModal(); },
+  doReset() { E.reset(); U.cart = []; U.reservationId = null; U.pendingCode = null; U.userId = null; U.compare = []; U.lastOrderId = null; U.regResult = null; U.regForm = {}; U.form = {}; U.modal = null; U.inf.sel = null; U.ord.open = null; U.inv.open = {}; U.sales.source = 'all'; save(); try { localStorage.setItem(KEY, JSON.stringify(E.state())); } catch (e) { } render(); toast('Demo data reset to the seeded week'); },
+  applycode(el, ev) { },
+  clearCode() { U.pendingCode = null; U.codeMsg = null; refresh(); },
+  shopChar(el) { U.shopChar = el.dataset.id; render(true); },
+  essType(el) { U.essType = el.dataset.id; render(true); },
+  cmp(el) { const id = el.dataset.id, i = U.compare.indexOf(id); if (i >= 0) U.compare.splice(i, 1); else if (U.compare.length >= 3) { toast('You can compare up to three kits. Remove one first.', true); return; } else U.compare.push(id); refresh(); },
+  clearCmp() { U.compare = []; refresh(); },
+  add(el) {
+    const id = el.dataset.id, av = E.productAvailability(id); if (!av || av.sellable === 0) { toast('That item is out of stock', true); return; }
+    const l = U.cart.find(x => x.productId === id); const q = (l ? l.qty : 0) + 1;
+    if (q > av.sellable) { toast('Only ' + av.sellable + ' available', true); return; }
+    if (l) l.qty = q; else U.cart.push({ productId: id, qty: 1 }); U.cartArea = el.dataset.area || 'shop'; U.cartError = null; refresh(); toast('Added to your bag');
+  },
+  qty(el) { const id = el.dataset.id, d = Number(el.dataset.d), l = U.cart.find(x => x.productId === id); if (!l) return; const av = E.productAvailability(id); const q = l.qty + d; if (q < 1) { U.cart = U.cart.filter(x => x !== l); } else if (q > av.sellable) { toast('Only ' + av.sellable + ' available', true); return; } else l.qty = q; refresh(); },
+  remove(el) { U.cart = U.cart.filter(x => x.productId !== el.dataset.id); refresh(); },
+  startCheckout() {
+    if (U.reservationId) E.releaseReservation(U.reservationId);
+    const r = E.reserve(U.cart); if (!r.ok) { U.cartError = r.message + (r.shortages ? ' ' + r.shortages.map(s => s.name + ' (need ' + s.need + ', have ' + s.have + ')').join(', ') : ''); refresh(); return; }
+    U.reservationId = r.reservation.id; U.cartError = null; U.checkoutError = null; save(); go('#checkout');
+  },
+  releaseRes() { if (U.reservationId) E.releaseReservation(U.reservationId); U.reservationId = null; save(); },
+  trackThis(el) { U.trackId = el.dataset.id; },
+  regAgain() { U.regResult = null; U.regForm = {}; render(); },
+  adjust(el) { const sku = el.dataset.sku, d = Number(el.dataset.d), st = E.itemStock(sku); const b = d < 0 ? (st.batches.find(x => !x.expired && x.onHand >= -d) || st.batches[0]) : (st.batches.find(x => !x.expired) || st.batches[0]); openModal({ type: 'adjust', sku, delta: d, batchId: b.id }); },
+  batches(el) { U.inv.open[el.dataset.sku] = !U.inv.open[el.dataset.sku]; render(true); },
+  invClear() { U.inv.search = ''; U.inv.type = 'all'; U.inv.status = 'all'; render(true); },
+  writeoff(el) { openModal({ type: 'confirm', title: 'Write off expired stock?', text: 'The remaining units of this batch leave stock and are recorded in the ledger as a write-off.', act: 'doWriteoff', id: el.dataset.id, confirm: 'Write off' }); },
+  doWriteoff(el) { const r = E.writeOff(el.dataset.id, 'Expired stock written off', roleName()); closeModal(); refresh(); toast(r.ok ? 'Written off ' + (-r.entry.qty) + ' units' : r.message, !r.ok); },
+  poFrom(el) { const sid = el.dataset.id, lines = E.reorderAlerts().filter(a => a.supplier.id === sid).map(a => ({ sku: a.sku, qty: a.suggested })); const r = E.createPO(sid, lines); refresh(); toast(r.ok ? 'Purchase order ' + r.po.id + ' created' : r.message, !r.ok); },
+  receivePO(el) { openModal({ type: 'receivePO', id: el.dataset.id }); },
+  ordFilter(el) { U.ord.status = el.dataset.id; U.ord.limit = 40; render(true); },
+  ordMore() { U.ord.limit = (U.ord.limit || 40) + 40; render(true); },
+  orderOpen(el) { U.ord.open = U.ord.open === el.dataset.id ? null : el.dataset.id; render(true); },
+  orderTo(el) { const r = E.transition(el.dataset.id, el.dataset.to, roleName()); closeModal(); refresh(); toast(r.ok ? el.dataset.id + ' is now ' + r.order.status : r.message, !r.ok); },
+  confirmCancel(el) { openModal({ type: 'confirm', title: 'Cancel order ' + el.dataset.id + '?', text: 'Stock returns to its original batches and any pending commission on this order is reversed. This cannot be undone.', act: 'orderTo', id: el.dataset.id, to: 'cancelled', confirm: 'Cancel order' }); },
+  board(el) { U.inf.board = el.dataset.id; render(true); },
+  trigger(el) { E.setSetting('commissionTrigger', el.dataset.id); U.settingsMsg = { ok: true, text: el.dataset.id === 'signup' ? 'Commission is now earned on registration.' : 'Commission is now earned on the first paid order.' }; refresh(); },
+  infOpen(el) { U.inf.sel = el.dataset.id; render(true); const t = document.getElementById('infDetail'); if (t) t.scrollIntoView({ block: 'start' }); },
+  infClose() { U.inf.sel = null; render(true); },
+  infStatus(el) { E.setInfluencerStatus(el.dataset.id, el.dataset.s); refresh(); toast('Influencer is now ' + el.dataset.s); },
+  codeStatus(el) { E.setCodeStatus(el.dataset.id, el.dataset.s); refresh(); toast('Code ' + el.dataset.s); },
+  newCode(el) { openModal({ type: 'newCode', id: el.dataset.id }); },
+  visitLink(el) { U.role = 'shopper'; save(); go('#join-' + el.dataset.code); },
+  approve(el) { const r = E.approveEntry(el.dataset.id); refresh(); toast(r.ok ? 'Entry approved' : r.message, !r.ok); },
+  approveAll(el) { const r = E.approveAllPending(el.dataset.id); refresh(); toast(r.count + ' entries approved'); },
+  reverse(el) { openModal({ type: 'reverse', id: el.dataset.id }); },
+  payout(el) { openModal({ type: 'payout', id: el.dataset.id }); },
+  salesAll() { U.sales.source = 'all'; render(true); },
+  copyText(el) { copyText(el.dataset.text, 'Link copied'); },
+  copyCsv() { const st = E.influencerStats(infRange()); const head = 'name,type,clicks,signups,referred_orders,referred_revenue,earned,pending,approved,paid'; const rows = st.rows.map(r => [r.influencer.name, r.influencer.type, r.clicks, r.signups, r.orders, r.revenue, r.earned, r.pending, r.approved, r.paid].map(v => /[,"]/.test(v) ? '"' + String(v).replace(/"/g, '""') + '"' : v).join(',')); copyText([head].concat(rows).join('\n'), 'Aggregate CSV copied'); }
+};
+const roleName = () => U.role === 'staff' ? 'Staff' : U.role === 'founder' ? 'Founder' : 'Ops team';
+
+const CHANGE = {
+  role(el) { ACT.role(el.value); },
+  invFilter(el) { U.inv[el.name] = el.value; render(true); },
+  salesSource(el) { U.sales.source = el.value; render(true); },
+  infRange(el) { U.inf.range = el.value; render(true); }
+};
+const FORMS = {
+  applycode(form) { const code = fd(form).code; const v = E.validateCode(code); U.codeMsg = v.ok ? { ok: true, text: 'Code ' + v.code.code + ' is valid and applied. It will follow you to registration.' } : { ok: false, text: v.message }; if (v.ok) { U.pendingCode = v.code.code; U.regForm.code = v.code.code; } refresh(); },
+  checkout(form, ev) {
+    const d = fd(form); U.form = d; const res = E.placeOrder({ reservationId: U.reservationId, customer: { name: d.name, email: d.email, phone: d.phone }, userId: U.userId, paymentResult: d.paymentResult, sourceArea: U.cartArea || U.entry || 'shop', by: 'Shopper' });
+    if (!res.ok) { U.checkoutError = res; if (res.error === 'reservation_expired') { U.reservationId = null; } refresh(); return; }
+    U.checkoutError = null; U.lastOrderId = res.order.id; U.trackId = res.order.id; U.cart = []; U.reservationId = null; U.form = {}; if (res.order.userId) U.userId = res.order.userId; save(); go('#confirmation');
+  },
+  track(form) { U.trackId = fd(form).id.trim(); render(true); },
+  register(form, ev) {
+    const d = fd(form), skip = ev.submitter && ev.submitter.name === 'skip'; U.regForm = { name: d.name, email: d.email, phone: d.phone, code: d.code };
+    const res = E.register({ name: d.name, email: d.email, phone: d.phone, code: d.code, deviceMarker: U.deviceMarker, continueWithoutCode: skip });
+    U.regResult = res; if (res.ok) { U.userId = res.user.id; U.pendingCode = null; U.regForm = {}; } save(); render(true);
+  },
+  invfilter(form) { const d = fd(form); U.inv.search = d.search; render(true); },
+  defaultrule(form) { const d = fd(form); const r = E.setSetting('defaultCommission', { fixed: d.fixed, percent: d.percent }); U.settingsMsg = r.ok ? { ok: true, text: 'Defaults saved. They apply to influencers without their own rate, from now on.' } : { ok: false, text: r.message }; refresh(); },
+  newinf(form) {
+    const d = fd(form); const hasF = d.fixed !== '', hasP = d.percent !== '';
+    const r = E.createInfluencer({ name: d.name, type: d.type, handle: d.handle, email: d.email, phone: d.phone, code: d.code, commission: hasF || hasP ? { fixed: hasF ? Number(d.fixed) : null, percent: hasP ? Number(d.percent) : null } : null });
+    U.inf.createMsg = r.ok ? { ok: true, text: r.influencer.name + ' was created' + (r.code ? ' with code ' + r.code.code : '') + '.' } : { ok: false, text: r.message }; if (r.ok) U.inf.sel = r.influencer.id; refresh();
+  },
+  adjust(form) { const d = fd(form); const r = E.adjust({ sku: U.modal.sku, batchId: d.batchId, delta: d.delta, reason: d.reason, note: d.note, by: roleName() }); if (!r.ok) { U.modal = Object.assign({}, U.modal, { error: r.message, batchId: d.batchId, delta: d.delta, reason: d.reason }); renderModal(); return; } closeModal(); refresh(); toast('Adjustment saved to the ledger'); },
+  reverse(form) { const r = E.reverseEntry(U.modal.id, fd(form).reason); if (!r.ok) { U.modal.error = r.message; renderModal(); return; } closeModal(); refresh(); toast('Entry reversed'); },
+  payout(form) {
+    const d = fd(form), q = E.payoutQueue().find(x => x.influencer.id === U.modal.id); const key = 'ui-' + U.modal.id + '-' + (q ? q.entries.map(e => e.id).join('.') : 'none');
+    const r = E.recordPayout(U.modal.id, d.reference, toMs(d.date, true), key); if (!r.ok) { U.modal.error = r.message; renderModal(); return; } closeModal(); refresh(); toast('Payout ' + r.payout.id + ' marked paid');
+  },
+  receivePO(form) {
+    const d = fd(form), po = E.purchaseOrders().find(p => p.id === U.modal.id);
+    const recs = po.lines.map(l => ({ sku: l.sku, lot: d['lot_' + l.sku], mfg: toMs(d['mfg_' + l.sku]), expiry: toMs(d['exp_' + l.sku]) }));
+    const r = E.receivePO(po.id, recs); if (!r.ok) { U.modal.error = r.message; renderModal(); return; } closeModal(); refresh(); toast(po.id + ' received into stock');
+  },
+  newCodeFor(form) { const r = E.createCode(U.modal.id, fd(form).code); if (!r.ok) { U.modal.error = r.message; renderModal(); return; } closeModal(); refresh(); toast('Code ' + r.code.code + ' added'); }
+};
+const LIVE = {
+  regcode(el) { const t = document.getElementById('regCodeMsg'); if (t) t.innerHTML = codeMsgHtml(el.value); },
+  newcode(el) { const t = document.getElementById('newCodeMsg'); if (!t) return; if (!el.value.trim()) { t.innerHTML = ''; return; } const c = E.createCodeCheck(el.value); t.innerHTML = c.ok ? `<div class="msg good">${esc(c.code)} is available.</div>` : `<div class="msg bad">${esc(c.message)}</div>`; },
+  modalcode(el) { const t = document.getElementById('modalCodeMsg'); if (!t) return; if (!el.value.trim()) { t.innerHTML = ''; return; } const c = E.createCodeCheck(el.value); t.innerHTML = c.ok ? `<div class="msg good">${esc(c.code)} is available.</div>` : `<div class="msg bad">${esc(c.message)}</div>`; }
+};
+
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('[data-act]'); const tgt = ev.target;
+  if (!el) { return; }
+  track(tgt, ev);
+  const fn = ACT[el.dataset.act]; if (fn) { const isLink = el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href').startsWith('#'); if (!isLink) ev.preventDefault(); fn(el, ev); }
+});
+document.addEventListener('click', ev => { const a = ev.target.closest('a[href^="#"], button, [data-area]'); if (a && !ev.target.closest('[data-act]')) track(ev.target, ev); });
+document.addEventListener('change', ev => { const el = ev.target.closest('[data-change]'); if (el && CHANGE[el.dataset.change]) CHANGE[el.dataset.change](el); });
+document.addEventListener('input', ev => { const el = ev.target.closest('[data-live]'); if (el && LIVE[el.dataset.live]) LIVE[el.dataset.live](el); });
+document.addEventListener('submit', ev => { const f = ev.target.closest('[data-form]'); if (!f) return; ev.preventDefault(); const fn = FORMS[f.dataset.form]; if (fn) fn(f, ev); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && U.modal) closeModal(); });
+window.addEventListener('hashchange', () => { U._focused = false; U.modal = null; render(); window.scrollTo(0, 0); });
+setInterval(() => {
+  if (!current || current.name !== 'checkout') return; const r = U.reservationId && E.reservation(U.reservationId); if (!r) return;
+  const rem = r.expiresAt - E.now(); const t = document.getElementById('timer');
+  if (rem <= 0 || r.status !== 'active') { render(); return; } if (t) t.textContent = Math.floor(rem / 60000) + ':' + String(Math.floor(rem / 1000) % 60).padStart(2, '0');
+}, 1000);
+
+/* copy fallback modal */
+const _modalHtml = modalHtml;
+modalHtml = function () {
+  const m = U.modal; if (m && m.type === 'copy') return `<div class="overlay" data-act="closeModal" data-overlay="1"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="row sb"><h3 id="mTitle">Copy this text</h3><button class="chip" data-act="closeModal">Close</button></div><p class="muted">Your browser blocked the copy button. Select the text and copy it.</p><textarea id="copyArea" rows="8" readonly>${esc(m.text)}</textarea></div></div>`;
+  return _modalHtml();
+};
+
+loadUI(); initEngine();
+if (U.role === 'influencer' && !E.influencer(U.infId)) U.role = 'shopper';
+try { if (!sessionStorage.getItem('cofoco-session')) { sessionStorage.setItem('cofoco-session', '1'); E.startSession(U.entry || 'shop'); } } catch (e) { }
+save(); render();
+
+
+</script>
+
+</body></html>
